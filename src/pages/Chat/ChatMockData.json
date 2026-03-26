@@ -1,0 +1,28 @@
+{
+  "conversations": [
+    {
+      "id": "1",
+      "jobTitle": "Senior Frontend Developer",
+      "companyName": "Google",
+      "lastMessage": "Здравствуйте! Мы ознакомились с...",
+      "lastMessageTime": "14:32",
+      "unread": true
+    },
+    {
+      "id": "2",
+      "jobTitle": "Middle .NET Developer",
+      "companyName": "Microsoft",
+      "lastMessage": "Ожидаем фидбек от тимлида.",
+      "lastMessageTime": "12:15",
+      "unread": false
+    },
+    {
+      "id": "3",
+      "jobTitle": "QA Automation",
+      "companyName": "Apple",
+      "lastMessage": "Спасибо за уделенное время!",
+      "lastMessageTime": "Вчера",
+      "unread": false
+    }
+  ]
+}
