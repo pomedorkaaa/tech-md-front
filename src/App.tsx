@@ -14,6 +14,14 @@ import CreateTaskPage from './pages/CreateTask/CreateTaskPage';
 import SolutionViewPage from './pages/SolutionView/SolutionViewPage';
 import LoginPage from './pages/Auth/LoginPage';
 import RegisterPage from './pages/Auth/RegisterPage';
+import ProfilePage from './pages/Profile/ProfilePage';
+import SettingsPage from './pages/Settings/SettingsPage';
+import AboutPage from './pages/Static/AboutPage';
+import SupportPage from './pages/Static/SupportPage';
+import BlogPage from './pages/Static/BlogPage';
+import TermsPage from './pages/Static/TermsPage';
+import PrivacyPage from './pages/Static/PrivacyPage';
+import CookiesPage from './pages/Static/CookiesPage';
 
 export default function App() {
   return (
@@ -37,9 +45,16 @@ export default function App() {
           <Route path="/admin" element={<AdminDashboard />} />
           <Route path="/sandbox" element={<SandboxPage />} />
           <Route path="/chat" element={<ChatPage />} />
+          <Route path="/profile" element={<ProfilePage />} />
+          <Route path="/settings" element={<SettingsPage />} />
+          <Route path="/about" element={<AboutPage />} />
+          <Route path="/support" element={<SupportPage />} />
+          <Route path="/blog" element={<BlogPage />} />
+          <Route path="/terms" element={<TermsPage />} />
+          <Route path="/privacy" element={<PrivacyPage />} />
+          <Route path="/cookies" element={<CookiesPage />} />
         </Route>
       </Routes>
     </BrowserRouter>
   );
 }
-  

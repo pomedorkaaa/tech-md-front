@@ -1,9 +1,27 @@
-import { Link } from 'react-router-dom';
+import { Link, useNavigate, Navigate } from 'react-router-dom';
 import { User, Briefcase, Mail, Lock, ShieldCheck, BadgeCheck } from 'lucide-react';
 import { useState } from 'react';
+import { useAuth } from '../../contexts/AuthContext';
 
 export default function RegisterPage() {
   const [accountType, setAccountType] = useState<'candidate' | 'company'>('candidate');
+  const { register, isAuthenticated } = useAuth();
+  const navigate = useNavigate();
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
+
+  if (isAuthenticated) return <Navigate to="/" replace />;
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    try {
+      await register(name, email, password, accountType === 'company' ? 'employer' : 'candidate');
+      navigate('/');
+    } finally { setLoading(false); }
+  };
 
   return (
     <main className="flex-1 flex items-center justify-center p-4 sm:p-6 relative min-h-screen overflow-x-hidden">
@@ -37,7 +55,7 @@ export default function RegisterPage() {
               Создать аккаунт
             </h2>
 
-            <form className="space-y-5 sm:space-y-6">
+            <form onSubmit={handleSubmit} className="space-y-5 sm:space-y-6">
               {/* Role Selection (Bento-style chips) */}
               <div className="space-y-3">
                 <label className="font-sans text-[10px] font-bold uppercase tracking-[0.2em] text-text-muted ml-1">
@@ -87,6 +105,9 @@ export default function RegisterPage() {
                       id="name"
                       placeholder="Иван Иванов"
                       type="text"
+                      value={name}
+                      onChange={e => setName(e.target.value)}
+                      required
                     />
                     <BadgeCheck
                       size={18}
@@ -108,6 +129,9 @@ export default function RegisterPage() {
                       id="email"
                       placeholder="name@company.md"
                       type="email"
+                      value={email}
+                      onChange={e => setEmail(e.target.value)}
+                      required
                     />
                     <Mail
                       size={18}
@@ -130,6 +154,9 @@ export default function RegisterPage() {
                         id="password"
                         placeholder="••••••••"
                         type="password"
+                        value={password}
+                        onChange={e => setPassword(e.target.value)}
+                        required
                       />
                       <Lock
                         size={18}
@@ -164,10 +191,11 @@ export default function RegisterPage() {
               {/* CTA Button */}
               <div className="pt-2 sm:pt-4">
                 <button
-                  className="w-full bg-gradient-to-br from-[#adc6ff] to-[#4d8eff] dark:from-[#4d8eff] dark:to-[#005ac2] text-white font-sans font-bold py-3.5 sm:py-4 rounded-lg shadow-lg active:scale-[0.98] transition-all duration-200"
+                  className="w-full bg-gradient-to-br from-[#adc6ff] to-[#4d8eff] dark:from-[#4d8eff] dark:to-[#005ac2] text-white font-sans font-bold py-3.5 sm:py-4 rounded-lg shadow-lg active:scale-[0.98] transition-all duration-200 disabled:opacity-50"
                   type="submit"
+                  disabled={loading}
                 >
-                  Создать аккаунт
+                  {loading ? 'Создание...' : 'Создать аккаунт'}
                 </button>
               </div>
             </form>

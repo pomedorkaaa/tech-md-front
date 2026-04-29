@@ -1,7 +1,28 @@
-import { Link } from 'react-router-dom';
-// Removed unused Github import
+import { Link, useNavigate, Navigate } from 'react-router-dom';
+import { useState } from 'react';
+import { useAuth } from '../../contexts/AuthContext';
 
 export default function LoginPage() {
+  const { login, isAuthenticated } = useAuth();
+  const navigate = useNavigate();
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
+
+  // Redirect if already authenticated
+  if (isAuthenticated) return <Navigate to="/" replace />;
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    try {
+      await login(email, password);
+      navigate('/');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <main className="flex-1 flex items-center justify-center px-4 sm:px-6 py-8 sm:py-12 relative min-h-screen overflow-x-hidden">
       {/* Background Ambient Elements */}
@@ -29,7 +50,7 @@ export default function LoginPage() {
 
         {/* Main Auth Surface */}
         <div className="bg-charcoal rounded-xl shadow-2xl p-5 sm:p-8 md:p-10 border border-border relative overflow-hidden">
-          <form className="space-y-5 sm:space-y-6 relative z-10">
+          <form onSubmit={handleSubmit} className="space-y-5 sm:space-y-6 relative z-10">
             {/* Email Field */}
             <div className="space-y-2">
               <label
@@ -45,6 +66,8 @@ export default function LoginPage() {
                   name="email"
                   placeholder="name@company.md"
                   type="text"
+                  value={email}
+                  onChange={e => setEmail(e.target.value)}
                 />
               </div>
             </div>
@@ -72,16 +95,19 @@ export default function LoginPage() {
                   name="password"
                   placeholder="••••••••"
                   type="password"
+                  value={password}
+                  onChange={e => setPassword(e.target.value)}
                 />
               </div>
             </div>
 
             {/* Primary Action */}
             <button
-              className="w-full bg-gradient-to-br from-[#adc6ff] to-[#4d8eff] dark:from-[#4d8eff] dark:to-[#005ac2] text-white font-sans font-bold py-3.5 sm:py-4 rounded-lg shadow-lg active:scale-[0.98] transition-all duration-200"
+              className="w-full bg-gradient-to-br from-[#adc6ff] to-[#4d8eff] dark:from-[#4d8eff] dark:to-[#005ac2] text-white font-sans font-bold py-3.5 sm:py-4 rounded-lg shadow-lg active:scale-[0.98] transition-all duration-200 disabled:opacity-50"
               type="submit"
+              disabled={loading}
             >
-              Войти
+              {loading ? 'Вход...' : 'Войти'}
             </button>
           </form>
 

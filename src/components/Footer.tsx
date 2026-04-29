@@ -1,5 +1,24 @@
 import { Link } from 'react-router-dom';
 
+const platformLinks = [
+  { label: 'Вакансии', path: '/jobs' },
+  { label: 'Компании', path: '/companies' },
+  { label: 'Задачи', path: '/sandbox' },
+  { label: 'Блог', path: '/blog' },
+];
+
+const companyLinks = [
+  { label: 'О нас', path: '/about' },
+  { label: 'Для работодателей', path: '/employer' },
+  { label: 'Поддержка', path: '/support' },
+];
+
+const legalLinks = [
+  { label: 'Условия использования', path: '/terms' },
+  { label: 'Конфиденциальность', path: '/privacy' },
+  { label: 'Cookie-файлы', path: '/cookies' },
+];
+
 export default function Footer() {
   return (
     <footer className="border-t border-border bg-surface-paper">
@@ -24,10 +43,10 @@ export default function Footer() {
           <div>
             <h3 className="text-sm font-semibold text-text-primary mb-4">Платформа</h3>
             <ul className="space-y-2">
-              {['Вакансии', 'Компании', 'Задачи', 'Песочница'].map((item) => (
-                <li key={item}>
-                  <Link to="#" className="text-sm text-text-muted hover:text-text-primary transition-colors">
-                    {item}
+              {platformLinks.map((item) => (
+                <li key={item.label}>
+                  <Link to={item.path} className="text-sm text-text-muted hover:text-text-primary transition-colors">
+                    {item.label}
                   </Link>
                 </li>
               ))}
@@ -38,10 +57,10 @@ export default function Footer() {
           <div>
             <h3 className="text-sm font-semibold text-text-primary mb-4">Компания</h3>
             <ul className="space-y-2">
-              {['О нас', 'Для работодателей', 'Поддержка', 'Блог'].map((item) => (
-                <li key={item}>
-                  <Link to="#" className="text-sm text-text-muted hover:text-text-primary transition-colors">
-                    {item}
+              {companyLinks.map((item) => (
+                <li key={item.label}>
+                  <Link to={item.path} className="text-sm text-text-muted hover:text-text-primary transition-colors">
+                    {item.label}
                   </Link>
                 </li>
               ))}
@@ -52,10 +71,10 @@ export default function Footer() {
           <div>
             <h3 className="text-sm font-semibold text-text-primary mb-4">Юридическая информация</h3>
             <ul className="space-y-2">
-              {['Условия использования', 'Конфиденциальность', 'Cookie-файлы'].map((item) => (
-                <li key={item}>
-                  <Link to="#" className="text-sm text-text-muted hover:text-text-primary transition-colors">
-                    {item}
+              {legalLinks.map((item) => (
+                <li key={item.label}>
+                  <Link to={item.path} className="text-sm text-text-muted hover:text-text-primary transition-colors">
+                    {item.label}
                   </Link>
                 </li>
               ))}
