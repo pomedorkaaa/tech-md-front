@@ -99,6 +99,7 @@
 
 html {
   scroll-behavior: smooth;
+  overflow-x: hidden;
 }
 
 body {
@@ -108,6 +109,8 @@ body {
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+  max-width: 100vw;
 }
 
 /* ─── Утилити-классы (Soft Dark Philosophy) ───────────────── */
@@ -167,4 +170,20 @@ body {
 /* ─── Переходы для смены темы ───────────────────────────── */
 html.dark, html.light {
   transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* ─── Анимации для мобильных модалок ─────────────────────── */
+@keyframes slide-up {
+  from {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.animate-slide-up {
+  animation: slide-up 0.3s ease-out;
 }

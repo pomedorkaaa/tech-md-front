@@ -22,25 +22,25 @@ export default function JobDetailPage() {
   const similarJobs = jobs.filter(j => j.id !== job.id && j.techStack.some(t => job.techStack.includes(t))).slice(0, 3);
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 overflow-x-hidden">
       {/* Навигация */}
-      <Link to="/jobs" className="inline-flex items-center gap-1 text-sm text-text-muted hover:text-text-primary transition-colors mb-6">
+      <Link to="/jobs" className="inline-flex items-center gap-1 text-sm text-text-muted hover:text-text-primary transition-colors mb-4 sm:mb-6">
         <ArrowLeft size={16} /> Назад к вакансиям
       </Link>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-5 sm:gap-6">
         {/* Основной контент */}
-        <div className="lg:col-span-2 space-y-6">
+        <div className="lg:col-span-2 space-y-4 sm:space-y-6">
           {/* Шапка */}
-          <div className="gradient-card rounded-xl p-6 border border-border">
-            <div className="flex items-start gap-4 mb-4">
-              <div className="w-16 h-16 rounded-xl bg-surface-elevated flex items-center justify-center text-3xl shrink-0">
+          <div className="gradient-card rounded-xl p-4 sm:p-6 border border-border">
+            <div className="flex flex-col sm:flex-row items-start gap-4 mb-4">
+              <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-xl bg-surface-elevated flex items-center justify-center text-2xl sm:text-3xl shrink-0">
                 {job.company.logo}
               </div>
-              <div className="flex-1">
-                <h1 className="text-2xl font-bold text-text-primary mb-1">{job.title}</h1>
+              <div className="flex-1 min-w-0">
+                <h1 className="text-xl sm:text-2xl font-bold text-text-primary mb-1">{job.title}</h1>
                 <p className="text-text-secondary">{job.company.name}</p>
-                <div className="flex items-center gap-4 mt-2 text-sm text-text-muted">
+                <div className="flex flex-wrap items-center gap-2 sm:gap-4 mt-2 text-sm text-text-muted">
                   <span className="flex items-center gap-1"><MapPin size={14} /> {job.location}</span>
                   <span className="flex items-center gap-1"><Clock size={14} /> {job.experience}</span>
                   <span className="px-2 py-0.5 rounded-md bg-surface-elevated text-text-secondary text-xs">
@@ -48,8 +48,9 @@ export default function JobDetailPage() {
                   </span>
                 </div>
               </div>
-              <div className="text-right shrink-0">
-                <p className="text-2xl font-bold text-text-primary">
+              {/* Зарплата — на мобильных под описанием */}
+              <div className="sm:text-right shrink-0 w-full sm:w-auto">
+                <p className="text-xl sm:text-2xl font-bold text-text-primary">
                   {job.salary.currency}{job.salary.min}–{job.salary.max}
                 </p>
                 <p className="text-sm text-text-muted">/месяц</p>
@@ -64,8 +65,8 @@ export default function JobDetailPage() {
               ))}
             </div>
 
-            <div className="flex gap-3">
-              <button className="flex-1 flex items-center justify-center gap-2 px-6 py-3 rounded-xl gradient-primary text-white font-medium hover:opacity-90 transition-opacity">
+            <div className="flex gap-2 sm:gap-3">
+              <button className="flex-1 flex items-center justify-center gap-2 px-4 sm:px-6 py-3 rounded-xl gradient-primary text-white font-medium hover:opacity-90 transition-opacity text-sm">
                 <Send size={16} /> Откликнуться
               </button>
               <button className="px-4 py-3 rounded-xl border border-border text-text-secondary hover:text-text-primary hover:bg-surface-elevated transition-colors">
@@ -75,17 +76,17 @@ export default function JobDetailPage() {
           </div>
 
           {/* О вакансии */}
-          <div className="gradient-card rounded-xl p-6 border border-border">
+          <div className="gradient-card rounded-xl p-4 sm:p-6 border border-border">
             <h2 className="text-lg font-bold text-text-primary mb-4">О вакансии</h2>
-            <p className="text-text-secondary leading-relaxed">{job.description}</p>
+            <p className="text-text-secondary leading-relaxed text-sm sm:text-base">{job.description}</p>
           </div>
 
           {/* Требования */}
-          <div className="gradient-card rounded-xl p-6 border border-border">
+          <div className="gradient-card rounded-xl p-4 sm:p-6 border border-border">
             <h2 className="text-lg font-bold text-text-primary mb-4">Чем предстоит заниматься</h2>
             <ul className="space-y-2">
               {job.requirements.map((req, idx) => (
-                <li key={idx} className="flex items-start gap-2 text-text-secondary">
+                <li key={idx} className="flex items-start gap-2 text-text-secondary text-sm sm:text-base">
                   <span className="w-1.5 h-1.5 rounded-full bg-primary mt-2 shrink-0" />
                   {req}
                 </li>
@@ -94,11 +95,11 @@ export default function JobDetailPage() {
           </div>
 
           {/* Мы предлагаем */}
-          <div className="gradient-card rounded-xl p-6 border border-border">
+          <div className="gradient-card rounded-xl p-4 sm:p-6 border border-border">
             <h2 className="text-lg font-bold text-text-primary mb-4">Мы предлагаем</h2>
             <ul className="space-y-2">
               {job.benefits.map((benefit, idx) => (
-                <li key={idx} className="flex items-start gap-2 text-text-secondary">
+                <li key={idx} className="flex items-start gap-2 text-text-secondary text-sm sm:text-base">
                   <span className="text-success">✓</span>
                   {benefit}
                 </li>
@@ -108,13 +109,13 @@ export default function JobDetailPage() {
 
           {/* Тестовое задание */}
           {job.testTask && job.testTask.type !== 'none' && (
-            <div className="gradient-card rounded-xl p-6 border border-primary/20">
+            <div className="gradient-card rounded-xl p-4 sm:p-6 border border-primary/20">
               <div className="flex items-center gap-2 mb-3">
                 <Code size={18} className="text-primary" />
                 <h2 className="text-lg font-bold text-text-primary">Тестовое задание</h2>
               </div>
-              <p className="text-text-secondary mb-3">{job.testTask.description}</p>
-              <div className="flex items-center gap-3 text-sm">
+              <p className="text-text-secondary mb-3 text-sm sm:text-base">{job.testTask.description}</p>
+              <div className="flex flex-wrap items-center gap-3 text-sm">
                 <span className={`px-2.5 py-1 rounded-lg font-medium ${
                   job.testTask.difficulty === 'Easy' ? 'bg-success/10 text-success' :
                   job.testTask.difficulty === 'Medium' ? 'bg-warning/10 text-warning' :
@@ -131,9 +132,9 @@ export default function JobDetailPage() {
         </div>
 
         {/* Сайдбар */}
-        <div className="space-y-6">
+        <div className="space-y-4 sm:space-y-6">
           {/* Информация о компании */}
-          <div className="gradient-card rounded-xl p-6 border border-border">
+          <div className="gradient-card rounded-xl p-4 sm:p-6 border border-border">
             <h3 className="text-lg font-bold text-text-primary mb-4">{job.company.name}</h3>
             <p className="text-sm text-text-secondary mb-4">{job.company.description}</p>
             <div className="space-y-3 text-sm">
@@ -163,7 +164,7 @@ export default function JobDetailPage() {
 
           {/* Похожие вакансии */}
           {similarJobs.length > 0 && (
-            <div className="gradient-card rounded-xl p-6 border border-border">
+            <div className="gradient-card rounded-xl p-4 sm:p-6 border border-border">
               <h3 className="text-lg font-bold text-text-primary mb-4">Похожие вакансии</h3>
               <div className="space-y-3">
                 {similarJobs.map(sj => (

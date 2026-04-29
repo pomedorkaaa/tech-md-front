@@ -5,7 +5,7 @@ const { company, jobs } = mockData as { company: Company, jobs: Job[] };
 export default function CompanyOverviewPage() {
 
   return (
-    <div className="max-w-7xl mx-auto space-y-6">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 space-y-5 sm:space-y-6 overflow-x-hidden">
       <div className="glass-panel p-8">
         <h1 className="text-3xl font-display font-extrabold mb-2">{company?.name || 'Компания'}</h1>
         <p className="text-on-surface-variant text-lg">

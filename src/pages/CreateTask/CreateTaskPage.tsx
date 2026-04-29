@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 
 export default function CreateTaskPage() {
   return (
-    <div className="flex-1 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+    <div className="flex-1 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-10 overflow-x-hidden">
       {/* Header section */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-10">
         <div>
@@ -14,15 +14,15 @@ export default function CreateTaskPage() {
             <ChevronRight size={14} />
             <span className="text-text-primary">Новое задание</span>
           </div>
-          <h1 className="text-text-primary text-4xl font-black tracking-tight leading-none font-sans">
+          <h1 className="text-text-primary text-2xl sm:text-4xl font-black tracking-tight leading-none font-sans">
             Создание задания
           </h1>
         </div>
-        <div className="flex items-center gap-3">
-          <button className="px-6 py-2.5 text-[11px] font-black uppercase tracking-widest text-text-muted bg-transparent border border-border rounded hover:bg-white/5 transition-all">
+        <div className="flex items-center gap-2 sm:gap-3 w-full sm:w-auto">
+          <button className="flex-1 sm:flex-none px-4 sm:px-6 py-2.5 text-[11px] font-black uppercase tracking-widest text-text-muted bg-transparent border border-border rounded hover:bg-white/5 transition-all">
             Отмена
           </button>
-          <button className="px-6 py-2.5 text-[11px] font-black uppercase tracking-widest text-white bg-gradient-to-br from-[#adc6ff] to-[#4d8eff] dark:from-[#4d8eff] dark:to-[#005ac2] rounded hover:opacity-90 transition-all shadow-lg flex items-center gap-2">
+          <button className="flex-1 sm:flex-none px-4 sm:px-6 py-2.5 text-[11px] font-black uppercase tracking-widest text-white bg-gradient-to-br from-[#adc6ff] to-[#4d8eff] dark:from-[#4d8eff] dark:to-[#005ac2] rounded hover:opacity-90 transition-all shadow-lg flex items-center justify-center gap-2">
             <CloudUpload size={18} />
             Опубликовать
           </button>
@@ -30,7 +30,7 @@ export default function CreateTaskPage() {
       </div>
 
       {/* Progress Bar */}
-      <div className="mb-10 bg-charcoal-light p-6 rounded-lg border border-border shadow-xl">
+      <div className="mb-6 sm:mb-10 bg-charcoal-light p-4 sm:p-6 rounded-lg border border-border shadow-xl">
         <div className="flex justify-between items-end mb-6">
           <div className="flex flex-col gap-1">
             <span className="text-[10px] uppercase tracking-[0.2em] text-text-muted font-black font-mono">
@@ -59,7 +59,7 @@ export default function CreateTaskPage() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
         <div className="lg:col-span-2 space-y-8">
           {/* Main Info */}
-          <div className="bg-charcoal-light p-8 rounded-lg border border-border shadow-lg">
+          <div className="bg-charcoal-light p-4 sm:p-8 rounded-lg border border-border shadow-lg">
             <div className="flex items-center gap-3 mb-8 border-b border-border/30 pb-4">
               <FileText className="text-primary bg-primary/10 p-2 rounded" size={36} />
               <h3 className="text-xl font-bold text-text-primary tracking-tight uppercase font-sans">
@@ -127,7 +127,7 @@ export default function CreateTaskPage() {
           </div>
 
           {/* Description Editor */}
-          <div className="bg-charcoal-light p-8 rounded-lg border border-border shadow-lg">
+          <div className="bg-charcoal-light p-4 sm:p-8 rounded-lg border border-border shadow-lg">
             <div className="flex items-center justify-between mb-8">
               <div className="flex items-center gap-3">
                 <FileText className="text-primary bg-primary/10 p-2 rounded" size={36} />
@@ -150,11 +150,11 @@ export default function CreateTaskPage() {
           </div>
 
           {/* Actions */}
-          <div className="flex justify-between items-center pt-4">
-            <button className="flex items-center gap-2 px-6 py-3 text-[11px] font-black text-text-muted uppercase tracking-[0.2em] hover:text-text-primary transition-colors">
+          <div className="flex flex-col-reverse sm:flex-row justify-between items-stretch sm:items-center gap-3 pt-4">
+            <button className="flex items-center justify-center gap-2 px-6 py-3 text-[11px] font-black text-text-muted uppercase tracking-[0.2em] hover:text-text-primary transition-colors">
               Сохранить черновик
             </button>
-            <button className="flex items-center gap-3 px-10 py-4 bg-gradient-to-br from-[#adc6ff] to-[#4d8eff] dark:from-[#4d8eff] dark:to-[#005ac2] hover:opacity-90 text-white rounded font-black uppercase tracking-[0.2em] text-[11px] shadow-xl transition-all transform active:scale-95 group">
+            <button className="flex items-center justify-center gap-3 px-6 sm:px-10 py-3 sm:py-4 bg-gradient-to-br from-[#adc6ff] to-[#4d8eff] dark:from-[#4d8eff] dark:to-[#005ac2] hover:opacity-90 text-white rounded font-black uppercase tracking-[0.2em] text-[11px] shadow-xl transition-all transform active:scale-95 group">
               Далее: Тест-кейсы
               <ChevronRight size={18} className="group-hover:translate-x-1 transition-transform" />
             </button>

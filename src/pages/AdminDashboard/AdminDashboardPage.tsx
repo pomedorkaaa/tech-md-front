@@ -11,29 +11,29 @@ const { activityLogs, techStackStats } = mockData as { activityLogs: ActivityLog
 
 export default function AdminDashboard() {
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      <h1 className="text-3xl font-bold text-text-primary mb-2">Обзор платформы</h1>
-      <p className="text-text-muted mb-8">Панель администратора TechMoldova</p>
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 overflow-x-hidden">
+      <h1 className="text-2xl sm:text-3xl font-bold text-text-primary mb-2">Обзор платформы</h1>
+      <p className="text-text-muted mb-6 sm:mb-8 text-sm sm:text-base">Панель администратора TechMoldova</p>
 
       {/* Статистика */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 mb-6 sm:mb-8">
         {[
           { label: 'Пользователи', value: '1,248', icon: Users, color: 'text-primary' },
           { label: 'Вакансии', value: '856', icon: Briefcase, color: 'text-info' },
           { label: 'Решения', value: '3.4k', icon: Code2, color: 'text-success' },
           { label: 'CPU Load', value: '42%', icon: Cpu, color: 'text-warning' },
         ].map(stat => (
-          <div key={stat.label} className="gradient-card rounded-xl p-5 border border-border">
+          <div key={stat.label} className="gradient-card rounded-xl p-4 sm:p-5 border border-border">
             <div className="flex items-center justify-between mb-3">
               <stat.icon size={20} className={stat.color} />
               <span className="text-xs text-text-muted">{stat.label}</span>
             </div>
-            <p className="text-3xl font-bold text-text-primary">{stat.value}</p>
+            <p className="text-2xl sm:text-3xl font-bold text-text-primary">{stat.value}</p>
           </div>
         ))}
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-5 sm:gap-6">
         {/* Активность сессий (график-заглушка) */}
         <div className="lg:col-span-2 gradient-card rounded-xl p-6 border border-border">
           <h2 className="text-lg font-bold text-text-primary mb-4">Активность сессий</h2>
@@ -75,7 +75,7 @@ export default function AdminDashboard() {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-5 sm:gap-6 mt-5 sm:mt-6">
         {/* Журнал активности */}
         <div className="lg:col-span-2 gradient-card rounded-xl p-6 border border-border">
           <h2 className="text-lg font-bold text-text-primary mb-4">Журнал активности</h2>

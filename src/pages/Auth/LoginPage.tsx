@@ -3,9 +3,9 @@ import { Link } from 'react-router-dom';
 
 export default function LoginPage() {
   return (
-    <main className="flex-1 flex items-center justify-center px-6 py-12 relative overflow-hidden min-h-screen">
+    <main className="flex-1 flex items-center justify-center px-4 sm:px-6 py-8 sm:py-12 relative min-h-screen overflow-x-hidden">
       {/* Background Ambient Elements */}
-      <div className="absolute top-0 left-0 w-full h-full pointer-events-none">
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-primary/5 rounded-full blur-[120px]"></div>
         <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-blue-500/5 rounded-full blur-[120px]"></div>
       </div>
@@ -13,12 +13,12 @@ export default function LoginPage() {
       {/* Login Card Container */}
       <div className="w-full max-w-md z-10">
         {/* Brand Header */}
-        <div className="text-center mb-10">
+        <div className="text-center mb-8 sm:mb-10">
           <Link to="/" className="inline-flex items-center justify-center gap-3 mb-2 hover:opacity-80 transition-opacity">
-            <div className="w-12 h-12 bg-primary flex items-center justify-center rounded-xl shadow-lg shadow-primary/20">
-              <span className="text-white font-sans font-black text-xl">TM</span>
+            <div className="w-10 h-10 sm:w-12 sm:h-12 bg-primary flex items-center justify-center rounded-xl shadow-lg shadow-primary/20 shrink-0">
+              <span className="text-white font-sans font-black text-lg sm:text-xl">TM</span>
             </div>
-            <h1 className="font-sans font-extrabold text-4xl tracking-tighter text-text-primary flex items-center">
+            <h1 className="font-sans font-extrabold text-3xl sm:text-4xl tracking-tighter text-text-primary flex items-center">
               Tech<span className="text-primary">Moldova</span>
             </h1>
           </Link>
@@ -28,8 +28,8 @@ export default function LoginPage() {
         </div>
 
         {/* Main Auth Surface */}
-        <div className="bg-charcoal rounded-xl shadow-2xl p-8 md:p-10 border border-border relative overflow-hidden">
-          <form className="space-y-6 relative z-10">
+        <div className="bg-charcoal rounded-xl shadow-2xl p-5 sm:p-8 md:p-10 border border-border relative overflow-hidden">
+          <form className="space-y-5 sm:space-y-6 relative z-10">
             {/* Email Field */}
             <div className="space-y-2">
               <label
@@ -78,7 +78,7 @@ export default function LoginPage() {
 
             {/* Primary Action */}
             <button
-              className="w-full bg-gradient-to-br from-[#adc6ff] to-[#4d8eff] dark:from-[#4d8eff] dark:to-[#005ac2] text-white font-sans font-bold py-4 rounded-lg shadow-lg active:scale-[0.98] transition-all duration-200"
+              className="w-full bg-gradient-to-br from-[#adc6ff] to-[#4d8eff] dark:from-[#4d8eff] dark:to-[#005ac2] text-white font-sans font-bold py-3.5 sm:py-4 rounded-lg shadow-lg active:scale-[0.98] transition-all duration-200"
               type="submit"
             >
               Войти
@@ -86,7 +86,7 @@ export default function LoginPage() {
           </form>
 
           {/* Divider */}
-          <div className="relative my-8 z-10">
+          <div className="relative my-6 sm:my-8 z-10">
             <div className="absolute inset-0 flex items-center">
               <div className="w-full border-t border-border"></div>
             </div>
@@ -98,7 +98,7 @@ export default function LoginPage() {
           </div>
 
           {/* Social Logins */}
-          <div className="grid grid-cols-2 gap-4 relative z-10">
+          <div className="grid grid-cols-2 gap-3 sm:gap-4 relative z-10">
             <button className="flex items-center justify-center gap-2 bg-charcoal-light hover:bg-surface-elevated text-text-primary py-3 rounded-lg border border-border transition-colors">
               <svg className="w-5 h-5" viewBox="0 0 24 24">
                 <path
@@ -131,7 +131,7 @@ export default function LoginPage() {
             </button>
           </div>
 
-          <p className="mt-8 text-center text-text-secondary text-sm relative z-10">
+          <p className="mt-6 sm:mt-8 text-center text-text-secondary text-sm relative z-10">
             Don't have an account?{' '}
             <Link
               to="/register"
