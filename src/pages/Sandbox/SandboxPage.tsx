@@ -87,18 +87,18 @@ export default function SandboxPage() {
              try {
                const res = userFunc(tc.a, tc.b);
                if (res === tc.expected) {
-                 results += \`✓ Тест \${idx+1}: sum_two_numbers(\${tc.a}, \${tc.b}) = \${res} — Пройден\\n\`;
+                 results += `✓ Тест ${idx+1}: sum_two_numbers(${tc.a}, ${tc.b}) = ${res} — Пройден\n`;
                  passed++;
                } else {
-                 results += \`✗ Тест \${idx+1}: sum_two_numbers(\${tc.a}, \${tc.b}) = \${res} (ожидалось \${tc.expected}) — Провален\\n\`;
+                 results += `✗ Тест ${idx+1}: sum_two_numbers(${tc.a}, ${tc.b}) = ${res} (ожидалось ${tc.expected}) — Провален\n`;
                }
              } catch (e: any) {
-               results += \`✗ Тест \${idx+1}: Ошибка выполнения - \${e.message}\\n\`;
+               results += `✗ Тест ${idx+1}: Ошибка выполнения - ${e.message}\n`;
              }
           });
           
           if (passed === testCases.length) {
-             results += '\\nВсе тесты пройдены! 🎉';
+             results += '\nВсе тесты пройдены! 🎉';
           }
           setOutput(results);
         } catch(e: any) {
