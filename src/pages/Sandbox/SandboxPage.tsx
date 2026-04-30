@@ -8,11 +8,6 @@ const CodeEditor = lazy(() => import('@uiw/react-textarea-code-editor').then(m =
 
 const { tasks } = mockData as { tasks: Task[] };
 
-const DEFAULT_CODE = `function sum_two_numbers(a, b) {
-  // Напишите ваше решение здесь
-  return a + b;
-}`;
-
 const TEST_CASES = [
   { a: 2, b: 3, expected: 5 },
   { a: -1, b: 1, expected: 0 },
@@ -70,7 +65,8 @@ const DIFFICULTY_STYLES: Record<string, string> = {
 
 export default function SandboxPage() {
   const [selectedTask, setSelectedTask] = useState<Task>(tasks[0]);
-  const [code, setCode] = useState(DEFAULT_CODE);
+  const [savedCodes, setSavedCodes] = useState<Record<string, string>>({});
+  const [code, setCode] = useState(tasks[0].defaultCode || '');
   const [output, setOutput] = useState('');
   const [language, setLanguage] = useState('javascript');
   const [isRunning, setIsRunning] = useState(false);
@@ -133,8 +129,22 @@ export default function SandboxPage() {
     }, 400);
   };
 
+  const handleTaskSelect = (task: Task) => {
+    if (task.id === selectedTask.id) return;
+    setSelectedTask(task);
+    setCode(savedCodes[task.id] || task.defaultCode || '');
+    setOutput('');
+  };
+
+  const handleCodeChange = (newCode: string) => {
+    setCode(newCode);
+    setSavedCodes(prev => ({ ...prev, [selectedTask.id]: newCode }));
+  };
+
   const handleClear = () => {
-    setCode('');
+    const def = selectedTask.defaultCode || '';
+    setCode(def);
+    setSavedCodes(prev => ({ ...prev, [selectedTask.id]: def }));
     setOutput('');
   };
 
@@ -153,7 +163,7 @@ export default function SandboxPage() {
             {tasks.map(task => (
               <button
                 key={task.id}
-                onClick={() => setSelectedTask(task)}
+                onClick={() => handleTaskSelect(task)}
                 className={
                   'w-full flex items-start gap-3 p-3 rounded-xl text-left transition-all ' +
                   (selectedTask.id === task.id
@@ -301,7 +311,7 @@ export default function SandboxPage() {
               value={code}
               language={language === 'typescript' ? 'ts' : language === 'javascript' ? 'js' : language}
               placeholder="Напишите ваш код здесь..."
-              onChange={e => setCode(e.target.value)}
+              onChange={e => handleCodeChange(e.target.value)}
               padding={20}
               style={{
                 fontSize: 14,

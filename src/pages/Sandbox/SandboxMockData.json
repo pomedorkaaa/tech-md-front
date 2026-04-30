@@ -28,7 +28,8 @@
         "-1000 <= a, b <= 1000"
       ],
       "solvedCount": 1842,
-      "language": "Python"
+      "language": "Python",
+      "defaultCode": "function sum_two_numbers(a, b) {\n  // Напишите ваше решение здесь\n  return a + b;\n}"
     },
     {
       "id": "2",
@@ -55,7 +56,8 @@
         "Временная сложность: O(n log n)"
       ],
       "solvedCount": 456,
-      "language": "JavaScript"
+      "language": "JavaScript",
+      "defaultCode": "function sortOffices(offices) {\n  // Напишите функцию сортировки отделений по плотности населения\n  return offices;\n}"
     },
     {
       "id": "3",
@@ -82,7 +84,8 @@
         "0 <= lists[i].length <= 500"
       ],
       "solvedCount": 89,
-      "language": "Python"
+      "language": "Python",
+      "defaultCode": "function mergeKLists(lists) {\n  // Объедините k отсортированных связных списков\n  return [];\n}"
     }
   ]
 }

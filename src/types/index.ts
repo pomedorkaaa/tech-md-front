@@ -79,6 +79,7 @@ export interface Task {
   constraints: string[];
   solvedCount?: number;
   language?: string;
+  defaultCode?: string;
 }
 
 // ─── Сообщение (Чат) ─────────────────────────────────────
