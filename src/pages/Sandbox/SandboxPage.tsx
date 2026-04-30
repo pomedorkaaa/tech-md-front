@@ -1,14 +1,10 @@
-import { useState, useRef, useCallback, useEffect } from 'react';
+import { useState, useRef, useCallback, useEffect, lazy, Suspense } from 'react';
 import { Play, RotateCcw, ChevronRight, Building2, GripVertical, Users } from 'lucide-react';
-import Editor from 'react-simple-code-editor';
-import Prism from 'prismjs';
-import 'prismjs/components/prism-python';
-import 'prismjs/components/prism-javascript';
-import 'prismjs/components/prism-typescript';
-import 'prismjs/components/prism-go';
-import 'prismjs/themes/prism-tomorrow.css';
 import mockData from './SandboxMockData.json';
 import type { Task } from '../../types';
+
+// Ленивая загрузка редактора кода
+const CodeEditor = lazy(() => import('@uiw/react-textarea-code-editor').then(m => ({ default: m.default })));
 
 const { tasks } = mockData as { tasks: Task[] };
 
@@ -24,28 +20,16 @@ const TEST_CASES = [
   { a: 10, b: -5, expected: 5 },
 ];
 
-function highlightCode(code: string, lang: string): string {
-  try {
-    const grammar = Prism.languages[lang] ?? Prism.languages['javascript'];
-    return Prism.highlight(code, grammar, lang);
-  } catch {
-    return code;
-  }
-}
-
 function runJavaScript(code: string): string {
   try {
-    const runner = new Function(
-      'a',
-      'b',
-      [
-        code,
-        'if (typeof sum_two_numbers === "function") {',
-        '  return sum_two_numbers(a, b);',
-        '}',
-        'throw new Error("Функция sum_two_numbers не найдена");',
-      ].join('\n')
-    );
+    const lines = [
+      code,
+      'if (typeof sum_two_numbers === "function") {',
+      '  return sum_two_numbers(a, b);',
+      '}',
+      'throw new Error("Функция sum_two_numbers не найдена");',
+    ];
+    const runner = new Function('a', 'b', lines.join('\n'));
 
     let results = '';
     let passed = 0;
@@ -55,27 +39,26 @@ function runJavaScript(code: string): string {
       try {
         const res = runner(tc.a, tc.b) as number;
         if (res === tc.expected) {
-          results += `\u2713 Тест ${i + 1}: sum_two_numbers(${tc.a}, ${tc.b}) = ${res} — Пройден\n`;
+          results += '\u2713 Тест ' + (i + 1) + ': sum_two_numbers(' + tc.a + ', ' + tc.b + ') = ' + res + ' — Пройден\n';
           passed++;
         } else {
-          results += `\u2717 Тест ${i + 1}: sum_two_numbers(${tc.a}, ${tc.b}) = ${res} (ожидалось ${tc.expected}) — Провален\n`;
+          results += '\u2717 Тест ' + (i + 1) + ': sum_two_numbers(' + tc.a + ', ' + tc.b + ') = ' + res + ' (ожидалось ' + tc.expected + ') — Провален\n';
         }
       } catch (err: unknown) {
         const msg = err instanceof Error ? err.message : String(err);
-        results += `\u2717 Тест ${i + 1}: Ошибка выполнения — ${msg}\n`;
+        results += '\u2717 Тест ' + (i + 1) + ': Ошибка выполнения — ' + msg + '\n';
       }
     }
 
     if (passed === TEST_CASES.length) {
       results += '\nВсе тесты пройдены! 🎉';
     } else {
-      results += `\nПройдено ${passed} из ${TEST_CASES.length} тестов.`;
+      results += '\nПройдено ' + passed + ' из ' + TEST_CASES.length + ' тестов.';
     }
-
     return results;
   } catch (err: unknown) {
     const msg = err instanceof Error ? err.message : String(err);
-    return `Ошибка компиляции: ${msg}`;
+    return 'Ошибка компиляции: ' + msg;
   }
 }
 
@@ -91,10 +74,10 @@ export default function SandboxPage() {
   const [output, setOutput] = useState('');
   const [language, setLanguage] = useState('javascript');
   const [isRunning, setIsRunning] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
 
   // ─── Ресайз панели задач ──────────────────────────────────
   const [panelWidth, setPanelWidth] = useState(380);
-  const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
   const isResizing = useRef(false);
   const startX = useRef(0);
   const startWidth = useRef(0);
@@ -111,6 +94,9 @@ export default function SandboxPage() {
   );
 
   useEffect(() => {
+    // Определяем isMobile только после монтирования, чтобы избежать ошибок
+    setIsMobile(window.innerWidth < 768);
+
     const handleMouseMove = (e: MouseEvent) => {
       if (!isResizing.current) return;
       const delta = e.clientX - startX.current;
@@ -141,9 +127,7 @@ export default function SandboxPage() {
       if (language === 'javascript') {
         setOutput(runJavaScript(code));
       } else {
-        setOutput(
-          'ℹ️ В демо-режиме компиляция поддерживается только для JavaScript.\n\nПереключите язык на JavaScript, чтобы проверить код.'
-        );
+        setOutput('ℹ️ В демо-режиме доступно только JavaScript.\n\nПереключите язык на JavaScript, чтобы проверить код.');
       }
       setIsRunning(false);
     }, 400);
@@ -155,7 +139,7 @@ export default function SandboxPage() {
   };
 
   return (
-    <div className="h-[calc(100vh-4rem)] flex flex-col-reverse md:flex-row">
+    <div className="h-[calc(100vh-4rem)] flex flex-col-reverse md:flex-row overflow-hidden">
 
       {/* ─── Левая панель: задачи ─────────────────────────────── */}
       <div
@@ -163,35 +147,29 @@ export default function SandboxPage() {
         style={{ width: isMobile ? '100%' : panelWidth }}
       >
         {/* Список задач */}
-        <div className="border-b border-border p-4 overflow-y-auto">
+        <div className="border-b border-border p-4 overflow-y-auto max-h-48 md:max-h-none">
           <h2 className="text-xs font-black uppercase tracking-widest text-text-secondary mb-3">Задачи</h2>
           <div className="space-y-1.5">
             {tasks.map(task => (
               <button
                 key={task.id}
                 onClick={() => setSelectedTask(task)}
-                className={`w-full flex items-start gap-3 p-3 rounded-xl text-left transition-all ${
-                  selectedTask.id === task.id
+                className={
+                  'w-full flex items-start gap-3 p-3 rounded-xl text-left transition-all ' +
+                  (selectedTask.id === task.id
                     ? 'bg-primary/10 border border-primary/20'
-                    : 'hover:bg-surface-elevated border border-transparent'
-                }`}
+                    : 'hover:bg-surface-elevated border border-transparent')
+                }
               >
                 <span
-                  className={`mt-0.5 w-2.5 h-2.5 rounded-full shrink-0 ${
-                    task.difficulty === 'Easy'
-                      ? 'bg-success'
-                      : task.difficulty === 'Medium'
-                      ? 'bg-warning'
-                      : 'bg-error'
-                  }`}
+                  className={
+                    'mt-0.5 w-2.5 h-2.5 rounded-full shrink-0 ' +
+                    (task.difficulty === 'Easy' ? 'bg-success' : task.difficulty === 'Medium' ? 'bg-warning' : 'bg-error')
+                  }
                 />
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center justify-between gap-2">
-                    <span
-                      className={`font-semibold text-sm truncate ${
-                        selectedTask.id === task.id ? 'text-primary' : 'text-text-primary'
-                      }`}
-                    >
+                    <span className={'font-semibold text-sm truncate ' + (selectedTask.id === task.id ? 'text-primary' : 'text-text-primary')}>
                       {task.title}
                     </span>
                     <ChevronRight size={14} className="text-text-muted shrink-0" />
@@ -215,11 +193,7 @@ export default function SandboxPage() {
           <div>
             <div className="flex items-start gap-3 mb-3">
               <h1 className="text-xl font-black text-text-primary flex-1">{selectedTask.title}</h1>
-              <span
-                className={`px-2.5 py-1 text-[10px] font-black uppercase tracking-wider rounded-lg border shrink-0 ${
-                  DIFFICULTY_STYLES[selectedTask.difficulty] ?? ''
-                }`}
-              >
+              <span className={'px-2.5 py-1 text-[10px] font-black uppercase tracking-wider rounded-lg border shrink-0 ' + (DIFFICULTY_STYLES[selectedTask.difficulty] ?? '')}>
                 {selectedTask.difficulty}
               </span>
             </div>
@@ -239,9 +213,7 @@ export default function SandboxPage() {
             )}
           </div>
 
-          <p className="text-sm text-text-secondary leading-relaxed whitespace-pre-line">
-            {selectedTask.description}
-          </p>
+          <p className="text-sm text-text-secondary leading-relaxed whitespace-pre-line">{selectedTask.description}</p>
 
           {selectedTask.examples.length > 0 && (
             <div>
@@ -254,9 +226,7 @@ export default function SandboxPage() {
                     <div className="text-[10px] font-bold uppercase tracking-widest text-text-muted mt-3 mb-1">Выход:</div>
                     <code className="text-sm text-success font-mono">{ex.output}</code>
                     {ex.explanation && (
-                      <p className="text-xs text-text-muted mt-2 italic border-t border-border pt-2">
-                        {ex.explanation}
-                      </p>
+                      <p className="text-xs text-text-muted mt-2 italic border-t border-border pt-2">{ex.explanation}</p>
                     )}
                   </div>
                 ))}
@@ -290,9 +260,9 @@ export default function SandboxPage() {
       )}
 
       {/* ─── Правая панель: редактор кода ───────────────────── */}
-      <div className="flex-1 flex flex-col min-w-0 h-1/2 md:h-full">
+      <div className="flex-1 flex flex-col min-w-0 h-1/2 md:h-full overflow-hidden">
         {/* Тулбар */}
-        <div className="flex items-center justify-between px-4 py-2.5 border-b border-border bg-charcoal">
+        <div className="flex items-center justify-between px-4 py-2.5 border-b border-border bg-charcoal shrink-0">
           <div className="flex items-center gap-2">
             <select
               value={language}
@@ -310,45 +280,48 @@ export default function SandboxPage() {
               onClick={handleClear}
               className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm text-text-secondary hover:text-text-primary hover:bg-surface-elevated transition-colors"
             >
-              <RotateCcw size={14} /> <span className="hidden sm:inline">Очистить</span>
+              <RotateCcw size={14} />
+              <span className="hidden sm:inline">Очистить</span>
             </button>
             <button
               onClick={handleRun}
               disabled={isRunning}
               className="flex items-center gap-1.5 px-3 md:px-5 py-1.5 rounded-lg text-sm font-bold text-white gradient-primary hover:opacity-90 transition-opacity shadow-md shadow-primary/20 disabled:opacity-50"
             >
-              <Play size={14} /> <span className="hidden sm:inline">{isRunning ? 'Запуск...' : 'Запустить'}</span>
+              <Play size={14} />
+              <span className="hidden sm:inline">{isRunning ? 'Запуск...' : 'Запустить'}</span>
             </button>
           </div>
         </div>
 
         {/* Редактор */}
-        <div className="flex-1 flex flex-col overflow-hidden">
-          <div className="flex-1 overflow-auto bg-[#1d1f21]">
-            <Editor
+        <div className="flex-1 overflow-auto bg-[#1d1f21]" data-color-mode="dark">
+          <Suspense fallback={<div className="p-5 text-text-muted text-sm">Загрузка редактора...</div>}>
+            <CodeEditor
               value={code}
-              onValueChange={setCode}
-              highlight={c => highlightCode(c, language)}
+              language={language === 'typescript' ? 'ts' : language === 'javascript' ? 'js' : language}
+              placeholder="Напишите ваш код здесь..."
+              onChange={e => setCode(e.target.value)}
               padding={20}
               style={{
-                fontFamily: '"Fira Code", "JetBrains Mono", "Cascadia Code", monospace',
                 fontSize: 14,
+                fontFamily: '"Fira Code", "JetBrains Mono", monospace',
                 lineHeight: 1.6,
                 minHeight: '100%',
                 backgroundColor: '#1d1f21',
+                color: '#c5c8c6',
               }}
-              textareaClassName="focus:outline-none"
             />
-          </div>
-
-          {/* Вывод */}
-          {output && (
-            <div className="h-40 border-t border-border bg-charcoal p-5 overflow-y-auto shrink-0">
-              <h3 className="text-[10px] font-black uppercase tracking-widest text-text-secondary mb-3">Вывод</h3>
-              <pre className="text-sm font-mono text-success whitespace-pre-wrap">{output}</pre>
-            </div>
-          )}
+          </Suspense>
         </div>
+
+        {/* Вывод */}
+        {output && (
+          <div className="h-40 border-t border-border bg-charcoal p-5 overflow-y-auto shrink-0">
+            <h3 className="text-[10px] font-black uppercase tracking-widest text-text-secondary mb-3">Вывод</h3>
+            <pre className="text-sm font-mono text-success whitespace-pre-wrap">{output}</pre>
+          </div>
+        )}
       </div>
     </div>
   );
