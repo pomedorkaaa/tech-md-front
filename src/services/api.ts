@@ -19,7 +19,7 @@ const { jobs } = jobsData as { jobs: Job[] };
 const { companies } = companiesData as { companies: Company[] };
 const { currentUser, applications, savedSnippets } = candidateData as unknown as { currentUser: User, applications: Application[], savedSnippets: SavedSnippet[] };
 const { testResults } = employerData as { testResults: TestResult[] };
-const { activityLogs, techStackStats } = adminData as { activityLogs: ActivityLog[], techStackStats: { name: string, value: number }[] };
+const { activityLogs, techStackStats } = adminData as { activityLogs: ActivityLog[], techStackStats: { name: string, percentage: number }[] };
 const { conversations } = chatData as { conversations: Conversation[] };
 const { tasks } = sandboxData as { tasks: Task[] };
 
