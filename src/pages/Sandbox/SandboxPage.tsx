@@ -319,7 +319,19 @@ export default function SandboxPage() {
         {output && (
           <div className="h-40 border-t border-border bg-charcoal p-5 overflow-y-auto shrink-0">
             <h3 className="text-[10px] font-black uppercase tracking-widest text-text-secondary mb-3">Вывод</h3>
-            <pre className="text-sm font-mono text-success whitespace-pre-wrap">{output}</pre>
+            <div className="text-sm font-mono whitespace-pre-wrap">
+              {output.split('\n').map((line, i) => (
+                <div key={i} className={
+                  line.includes('\u2717') || line.includes('Ошибка') || line.includes('Провален') 
+                    ? 'text-error' 
+                    : line.includes('\u2713') || line.includes('Пройден') || line.includes('🎉')
+                    ? 'text-success' 
+                    : 'text-text-secondary'
+                }>
+                  {line}
+                </div>
+              ))}
+            </div>
           </div>
         )}
       </div>
