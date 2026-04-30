@@ -23,18 +23,41 @@ const { activityLogs, techStackStats } = adminData as { activityLogs: ActivityLo
 const { conversations } = chatData as { conversations: Conversation[] };
 const { tasks } = sandboxData as { tasks: Task[] };
 
-// Симуляция задержки сети
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+const USE_MOCKS = import.meta.env.VITE_USE_MOCKS !== 'false'; // По умолчанию true, пока нет бэкенда
+
+// Симуляция задержки сети для моков
 const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+
+async function fetchApi<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
+  const response = await fetch(`${API_URL}${endpoint}`, {
+    ...options,
+    headers: {
+      'Content-Type': 'application/json',
+      ...options.headers,
+    },
+  });
+  if (!response.ok) {
+    throw new Error(`API Error: ${response.statusText}`);
+  }
+  return response.json();
+}
 
 // ─── Вакансии ────────────────────────────────────────────
 export async function getJobs(): Promise<Job[]> {
-  await delay(100);
-  return jobs;
+  if (USE_MOCKS) {
+    await delay(100);
+    return jobs;
+  }
+  return fetchApi<Job[]>('/jobs');
 }
 
 export async function getJobById(id: string): Promise<Job | undefined> {
-  await delay(100);
-  return jobs.find(job => job.id === id);
+  if (USE_MOCKS) {
+    await delay(100);
+    return jobs.find(job => job.id === id);
+  }
+  return fetchApi<Job>(`/jobs/${id}`);
 }
 
 export async function searchJobs(query: string): Promise<Job[]> {
