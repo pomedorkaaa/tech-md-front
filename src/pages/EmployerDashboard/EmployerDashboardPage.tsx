@@ -1,4 +1,5 @@
 import { Briefcase, Users, Clock, UserCheck, Eye, Plus, ArrowRight } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import mockData from './EmployerMockData.json';
 import type { Job, TestResult } from '../../types';
 const { jobs, testResults } = mockData as { jobs: Job[], testResults: TestResult[] };
@@ -89,11 +90,11 @@ export default function EmployerDashboard() {
                     }`}>
                       {result.score}/{result.maxScore}
                     </p>
-                    <p className="text-xs text-text-muted">{result.passedTests}/{result.totalTests} тестов</p>
+                    <p className="text-xs text-text-muted">{result.timeSpent} • {result.language}</p>
                   </div>
-                  <button className="p-2 rounded-lg hover:bg-surface-overlay transition-colors text-text-muted hover:text-primary">
-                    <Eye size={16} />
-                  </button>
+                  <Link to={`/employer/tests/${result.id}`} className="p-2 text-text-muted hover:text-primary bg-surface border border-border rounded-lg transition-colors">
+                    <ArrowRight size={16} />
+                  </Link>
                 </div>
               </div>
             ))}
