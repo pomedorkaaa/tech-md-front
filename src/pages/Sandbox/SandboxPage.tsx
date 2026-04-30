@@ -1,5 +1,5 @@
 import { useState, useRef, useCallback, useEffect, lazy, Suspense } from 'react';
-import { Play, RotateCcw, ChevronRight, Building2, GripVertical, Users } from 'lucide-react';
+import { Play, RotateCcw, ChevronRight, Building2, GripVertical, GripHorizontal, Users } from 'lucide-react';
 import mockData from './SandboxMockData.json';
 import type { Task } from '../../types';
 
@@ -26,6 +26,18 @@ function formatValue(val: unknown): string {
   return String(val);
 }
 
+// Форматирование ошибки как в настоящем компиляторе
+function formatError(err: unknown): string {
+  if (!(err instanceof Error)) return String(err);
+  const name = err.constructor.name || 'Error';
+  const msg = err.message;
+  // Пытаемся достать номер строки из стека
+  const stack = err.stack || '';
+  const lineMatch = stack.match(/<anonymous>:(\d+):(\d+)/);
+  const location = lineMatch ? ' (строка ' + lineMatch[1] + ', позиция ' + lineMatch[2] + ')' : '';
+  return name + location + ': ' + msg;
+}
+
 // Универсальный запуск JS-кода с тестами из задачи
 function runJavaScript(code: string, task: Task): string {
   const fnName = task.functionName;
@@ -39,8 +51,7 @@ function runJavaScript(code: string, task: Task): string {
   try {
     new Function(code);
   } catch (err: unknown) {
-    const msg = err instanceof Error ? err.message : String(err);
-    return '\u274c Синтаксическая ошибка:\n' + msg;
+    return '\u274c SyntaxError\n\n' + formatError(err) + '\n\nКод не может быть выполнен — исправьте синтаксическую ошибку.';
   }
 
   // Шаг 2: Проверяем, что нужная функция определена
@@ -48,14 +59,28 @@ function runJavaScript(code: string, task: Task): string {
     const checkFn = new Function(code + '\nreturn typeof ' + fnName + ';');
     const fnType = checkFn();
     if (fnType !== 'function') {
-      return '\u274c Функция "' + fnName + '" не найдена в вашем коде.\n\nУбедитесь, что вы объявили функцию с именем ' + fnName + '.';
+      return '\u274c Функция "' + fnName + '" не найдена\n\nВаш код не содержит функцию с именем ' + fnName + '.\nУбедитесь, что имя функции совпадает с заданием.';
     }
   } catch (err: unknown) {
-    const msg = err instanceof Error ? err.message : String(err);
-    return '\u274c Ошибка при проверке кода:\n' + msg;
+    // Код парсится, но при выполнении верхнего уровня падает — это runtime-ошибка
+    return '\u274c ' + formatError(err) + '\n\nОшибка возникла при выполнении кода верхнего уровня (вне функции).';
   }
 
-  // Шаг 3: Прогоняем тесты
+  // Шаг 3: Пробный запуск на первом тесте — ловим runtime-ошибки внутри функции
+  const firstTc = testCases[0];
+  try {
+    const argsJson = JSON.stringify(firstTc.args);
+    const probe = new Function(code + '\nreturn ' + fnName + '.apply(null, ' + argsJson + ');');
+    probe();
+  } catch (err: unknown) {
+    // Отличаем ошибки кода от логических ошибок
+    if (err instanceof ReferenceError || err instanceof TypeError || err instanceof RangeError || err instanceof URIError) {
+      return '\u274c ' + formatError(err) + '\n\nОшибка возникла при вызове ' + fnName + '(' + firstTc.args.map(a => formatValue(a)).join(', ') + ').\nПроверьте переменные и типы данных в вашем коде.';
+    }
+    // Если это другая ошибка (например, пользователь сам кидает throw) — продолжаем к тестам
+  }
+
+  // Шаг 4: Прогоняем все тесты
   let results = '';
   let passed = 0;
 
@@ -64,11 +89,8 @@ function runJavaScript(code: string, task: Task): string {
     const label = tc.label || (fnName + '(' + tc.args.map(a => formatValue(a)).join(', ') + ')');
 
     try {
-      // Создаём функцию, которая вызывает пользовательскую функцию с аргументами
       const argsJson = JSON.stringify(tc.args);
-      const wrapper = new Function(
-        code + '\nreturn ' + fnName + '.apply(null, ' + argsJson + ');'
-      );
+      const wrapper = new Function(code + '\nreturn ' + fnName + '.apply(null, ' + argsJson + ');');
       const res = wrapper();
 
       if (deepEqual(res, tc.expected)) {
@@ -78,8 +100,7 @@ function runJavaScript(code: string, task: Task): string {
         results += '\u2717 Тест ' + (i + 1) + ': ' + label + ' \u2192 ' + formatValue(res) + ' (ожидалось ' + formatValue(tc.expected) + ') — Провален\n';
       }
     } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : String(err);
-      results += '\u2717 Тест ' + (i + 1) + ': ' + label + ' — Ошибка: ' + msg + '\n';
+      results += '\u2717 Тест ' + (i + 1) + ': ' + label + ' — ' + formatError(err) + '\n';
     }
   }
 
@@ -107,11 +128,18 @@ export default function SandboxPage() {
   const [isRunning, setIsRunning] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
 
-  // ─── Ресайз панели задач ──────────────────────────────────
+  // ─── Ресайз панели задач (горизонтальный) ─────────────────
   const [panelWidth, setPanelWidth] = useState(380);
   const isResizing = useRef(false);
   const startX = useRef(0);
   const startWidth = useRef(0);
+
+  // ─── Ресайз вывода (вертикальный) ─────────────────────────
+  const [outputHeight, setOutputHeight] = useState(180);
+  const isResizingOutput = useRef(false);
+  const startY = useRef(0);
+  const startHeight = useRef(0);
+  const editorContainerRef = useRef<HTMLDivElement>(null);
 
   const handleMouseDown = useCallback(
     (e: React.MouseEvent) => {
@@ -129,13 +157,22 @@ export default function SandboxPage() {
     setIsMobile(window.innerWidth < 768);
 
     const handleMouseMove = (e: MouseEvent) => {
-      if (!isResizing.current) return;
-      const delta = e.clientX - startX.current;
-      const newWidth = Math.max(280, Math.min(600, startWidth.current + delta));
-      setPanelWidth(newWidth);
+      if (isResizing.current) {
+        const delta = e.clientX - startX.current;
+        const newWidth = Math.max(280, Math.min(600, startWidth.current + delta));
+        setPanelWidth(newWidth);
+      }
+      if (isResizingOutput.current) {
+        const delta = startY.current - e.clientY;
+        const container = editorContainerRef.current;
+        const maxH = container ? container.clientHeight - 100 : 500;
+        const newHeight = Math.max(60, Math.min(maxH, startHeight.current + delta));
+        setOutputHeight(newHeight);
+      }
     };
     const handleMouseUp = () => {
       isResizing.current = false;
+      isResizingOutput.current = false;
       document.body.style.cursor = '';
       document.body.style.userSelect = '';
     };
@@ -305,7 +342,7 @@ export default function SandboxPage() {
       )}
 
       {/* ─── Правая панель: редактор кода ───────────────────── */}
-      <div className="flex-1 flex flex-col min-w-0 h-1/2 md:h-full overflow-hidden">
+      <div ref={editorContainerRef} className="flex-1 flex flex-col min-w-0 h-1/2 md:h-full overflow-hidden">
         {/* Тулбар */}
         <div className="flex items-center justify-between px-4 py-2.5 border-b border-border bg-charcoal shrink-0">
           <div className="flex items-center gap-2">
@@ -326,7 +363,7 @@ export default function SandboxPage() {
               className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm text-text-secondary hover:text-text-primary hover:bg-surface-elevated transition-colors"
             >
               <RotateCcw size={14} />
-              <span className="hidden sm:inline">Очистить</span>
+              <span className="hidden sm:inline">Сброс</span>
             </button>
             <button
               onClick={handleRun}
@@ -360,17 +397,38 @@ export default function SandboxPage() {
           </Suspense>
         </div>
 
+        {/* ─── Ресайз-разделитель вертикальный ──────────────── */}
+        {output && (
+          <div
+            onMouseDown={(e) => {
+              isResizingOutput.current = true;
+              startY.current = e.clientY;
+              startHeight.current = outputHeight;
+              document.body.style.cursor = 'row-resize';
+              document.body.style.userSelect = 'none';
+            }}
+            className="h-1.5 shrink-0 bg-border hover:bg-primary/40 cursor-row-resize flex items-center justify-center transition-colors group"
+          >
+            <GripHorizontal size={12} className="text-text-muted group-hover:text-primary transition-colors" />
+          </div>
+        )}
+
         {/* Вывод */}
         {output && (
-          <div className="h-40 border-t border-border bg-charcoal p-5 overflow-y-auto shrink-0">
+          <div
+            className="border-t border-border bg-charcoal px-5 pt-4 pb-3 overflow-y-auto shrink-0"
+            style={{ height: outputHeight }}
+          >
             <h3 className="text-[10px] font-black uppercase tracking-widest text-text-secondary mb-3">Вывод</h3>
             <div className="text-sm font-mono whitespace-pre-wrap">
               {output.split('\n').map((line, i) => (
                 <div key={i} className={
-                  line.includes('\u2717') || line.includes('Ошибка') || line.includes('Провален') 
+                  line.includes('\u274c') || line.includes('\u2717') || line.includes('Error') || line.includes('Провален')
                     ? 'text-error' 
                     : line.includes('\u2713') || line.includes('Пройден') || line.includes('🎉')
                     ? 'text-success' 
+                    : line.includes('\u26a0')
+                    ? 'text-warning'
                     : 'text-text-secondary'
                 }>
                   {line}
