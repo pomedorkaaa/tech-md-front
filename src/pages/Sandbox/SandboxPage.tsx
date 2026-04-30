@@ -13,6 +13,7 @@ export default function SandboxPage() {
 
   // ─── Ресайз панели задач ─────────────────────────────
   const [panelWidth, setPanelWidth] = useState(380);
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
   const isResizing = useRef(false);
   const startX = useRef(0);
   const startWidth = useRef(0);
@@ -37,11 +38,15 @@ export default function SandboxPage() {
       document.body.style.cursor = '';
       document.body.style.userSelect = '';
     };
+    const handleWindowResize = () => setIsMobile(window.innerWidth < 768);
+    
     window.addEventListener('mousemove', handleMouseMove);
     window.addEventListener('mouseup', handleMouseUp);
+    window.addEventListener('resize', handleWindowResize);
     return () => {
       window.removeEventListener('mousemove', handleMouseMove);
       window.removeEventListener('mouseup', handleMouseUp);
+      window.removeEventListener('resize', handleWindowResize);
     };
   }, []);
 
@@ -56,11 +61,11 @@ export default function SandboxPage() {
   };
 
   return (
-    <div className="h-[calc(100vh-4rem)] flex">
+    <div className="h-[calc(100vh-4rem)] flex flex-col md:flex-row">
       {/* ─── Левая панель: задачи ─────────────────────── */}
       <div
-        className="shrink-0 border-r border-border bg-charcoal flex flex-col overflow-hidden"
-        style={{ width: panelWidth }}
+        className="shrink-0 border-b md:border-b-0 md:border-r border-border bg-charcoal flex flex-col overflow-hidden h-1/2 md:h-full"
+        style={{ width: isMobile ? '100%' : panelWidth }}
       >
         {/* Список задач */}
         <div className="border-b border-border p-4">
@@ -172,15 +177,17 @@ export default function SandboxPage() {
       </div>
 
       {/* ─── Ресайз-разделитель ─────────────────────────── */}
-      <div
-        onMouseDown={handleMouseDown}
-        className="w-1.5 shrink-0 bg-border hover:bg-primary/40 cursor-col-resize flex items-center justify-center transition-colors group"
-      >
-        <GripVertical size={12} className="text-text-muted group-hover:text-primary transition-colors" />
-      </div>
+      {!isMobile && (
+        <div
+          onMouseDown={handleMouseDown}
+          className="w-1.5 shrink-0 bg-border hover:bg-primary/40 cursor-col-resize flex items-center justify-center transition-colors group hidden md:flex"
+        >
+          <GripVertical size={12} className="text-text-muted group-hover:text-primary transition-colors" />
+        </div>
+      )}
 
       {/* ─── Правая панель: редактор кода ──────────────── */}
-      <div className="flex-1 flex flex-col min-w-0">
+      <div className="flex-1 flex flex-col min-w-0 h-1/2 md:h-full">
         {/* Тулбар */}
         <div className="flex items-center justify-between px-4 py-2.5 border-b border-border bg-charcoal">
           <div className="flex items-center gap-2">
@@ -200,9 +207,9 @@ export default function SandboxPage() {
             </button>
             <button
               onClick={handleRun}
-              className="flex items-center gap-1.5 px-5 py-1.5 rounded-lg text-sm font-bold text-white gradient-primary hover:opacity-90 transition-opacity shadow-md shadow-primary/20"
+              className="flex items-center gap-1.5 px-3 md:px-5 py-1.5 rounded-lg text-sm font-bold text-white gradient-primary hover:opacity-90 transition-opacity shadow-md shadow-primary/20"
             >
-              <Play size={14} /> Запустить
+              <Play size={14} /> <span className="hidden sm:inline">Запустить</span>
             </button>
           </div>
         </div>
