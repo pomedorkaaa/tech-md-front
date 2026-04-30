@@ -12,6 +12,7 @@ import SandboxPage from './pages/Sandbox/SandboxPage';
 import ChatPage from './pages/Chat/ChatPage';
 import CreateTaskPage from './pages/CreateTask/CreateTaskPage';
 import CreateCompanyPage from './pages/EmployerDashboard/CreateCompanyPage';
+import CreateJobPage from './pages/EmployerDashboard/CreateJobPage';
 import SolutionViewPage from './pages/SolutionView/SolutionViewPage';
 import LoginPage from './pages/Auth/LoginPage';
 import RegisterPage from './pages/Auth/RegisterPage';
@@ -36,6 +37,7 @@ export default function App() {
           <Route path="/dashboard" element={<CandidateDashboard />} />
           <Route path="/employer" element={<EmployerDashboard />} />
           <Route path="/employer/companies/new" element={<CreateCompanyPage />} />
+          <Route path="/employer/jobs/new" element={<CreateJobPage />} />
           <Route path="/employer/tasks/new" element={<CreateTaskPage />} />
           <Route path="/employer/solutions/:id" element={<SolutionViewPage />} />
           <Route path="/admin" element={<AdminDashboard />} />
