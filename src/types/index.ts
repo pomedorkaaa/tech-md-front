@@ -80,6 +80,12 @@ export interface Task {
   solvedCount?: number;
   language?: string;
   defaultCode?: string;
+  functionName?: string;
+  testCases?: {
+    args: unknown[];
+    expected: unknown;
+    label?: string;
+  }[];
 }
 
 // ─── Сообщение (Чат) ─────────────────────────────────────

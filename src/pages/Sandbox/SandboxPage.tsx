@@ -8,53 +8,88 @@ const CodeEditor = lazy(() => import('@uiw/react-textarea-code-editor').then(m =
 
 const { tasks } = mockData as { tasks: Task[] };
 
-const TEST_CASES = [
-  { a: 2, b: 3, expected: 5 },
-  { a: -1, b: 1, expected: 0 },
-  { a: 0, b: 0, expected: 0 },
-  { a: 10, b: -5, expected: 5 },
-];
+// Глубокое сравнение результатов (для массивов и объектов)
+function deepEqual(a: unknown, b: unknown): boolean {
+  if (a === b) return true;
+  if (a === null || b === null || a === undefined || b === undefined) return false;
+  if (typeof a !== typeof b) return false;
+  if (typeof a !== 'object') return false;
+  const ja = JSON.stringify(a);
+  const jb = JSON.stringify(b);
+  return ja === jb;
+}
 
-function runJavaScript(code: string): string {
+function formatValue(val: unknown): string {
+  if (val === undefined) return 'undefined';
+  if (val === null) return 'null';
+  if (typeof val === 'object') return JSON.stringify(val);
+  return String(val);
+}
+
+// Универсальный запуск JS-кода с тестами из задачи
+function runJavaScript(code: string, task: Task): string {
+  const fnName = task.functionName;
+  const testCases = task.testCases;
+
+  if (!fnName || !testCases || testCases.length === 0) {
+    return '\u26a0\ufe0f Для этой задачи тесты ещё не настроены.';
+  }
+
+  // Шаг 1: Проверяем, что код вообще парсится
   try {
-    const lines = [
-      code,
-      'if (typeof sum_two_numbers === "function") {',
-      '  return sum_two_numbers(a, b);',
-      '}',
-      'throw new Error("Функция sum_two_numbers не найдена");',
-    ];
-    const runner = new Function('a', 'b', lines.join('\n'));
-
-    let results = '';
-    let passed = 0;
-
-    for (let i = 0; i < TEST_CASES.length; i++) {
-      const tc = TEST_CASES[i];
-      try {
-        const res = runner(tc.a, tc.b) as number;
-        if (res === tc.expected) {
-          results += '\u2713 Тест ' + (i + 1) + ': sum_two_numbers(' + tc.a + ', ' + tc.b + ') = ' + res + ' — Пройден\n';
-          passed++;
-        } else {
-          results += '\u2717 Тест ' + (i + 1) + ': sum_two_numbers(' + tc.a + ', ' + tc.b + ') = ' + res + ' (ожидалось ' + tc.expected + ') — Провален\n';
-        }
-      } catch (err: unknown) {
-        const msg = err instanceof Error ? err.message : String(err);
-        results += '\u2717 Тест ' + (i + 1) + ': Ошибка выполнения — ' + msg + '\n';
-      }
-    }
-
-    if (passed === TEST_CASES.length) {
-      results += '\nВсе тесты пройдены! 🎉';
-    } else {
-      results += '\nПройдено ' + passed + ' из ' + TEST_CASES.length + ' тестов.';
-    }
-    return results;
+    new Function(code);
   } catch (err: unknown) {
     const msg = err instanceof Error ? err.message : String(err);
-    return 'Ошибка компиляции: ' + msg;
+    return '\u274c Синтаксическая ошибка:\n' + msg;
   }
+
+  // Шаг 2: Проверяем, что нужная функция определена
+  try {
+    const checkFn = new Function(code + '\nreturn typeof ' + fnName + ';');
+    const fnType = checkFn();
+    if (fnType !== 'function') {
+      return '\u274c Функция "' + fnName + '" не найдена в вашем коде.\n\nУбедитесь, что вы объявили функцию с именем ' + fnName + '.';
+    }
+  } catch (err: unknown) {
+    const msg = err instanceof Error ? err.message : String(err);
+    return '\u274c Ошибка при проверке кода:\n' + msg;
+  }
+
+  // Шаг 3: Прогоняем тесты
+  let results = '';
+  let passed = 0;
+
+  for (let i = 0; i < testCases.length; i++) {
+    const tc = testCases[i];
+    const label = tc.label || (fnName + '(' + tc.args.map(a => formatValue(a)).join(', ') + ')');
+
+    try {
+      // Создаём функцию, которая вызывает пользовательскую функцию с аргументами
+      const argsJson = JSON.stringify(tc.args);
+      const wrapper = new Function(
+        code + '\nreturn ' + fnName + '.apply(null, ' + argsJson + ');'
+      );
+      const res = wrapper();
+
+      if (deepEqual(res, tc.expected)) {
+        results += '\u2713 Тест ' + (i + 1) + ': ' + label + ' \u2192 ' + formatValue(res) + ' — Пройден\n';
+        passed++;
+      } else {
+        results += '\u2717 Тест ' + (i + 1) + ': ' + label + ' \u2192 ' + formatValue(res) + ' (ожидалось ' + formatValue(tc.expected) + ') — Провален\n';
+      }
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : String(err);
+      results += '\u2717 Тест ' + (i + 1) + ': ' + label + ' — Ошибка: ' + msg + '\n';
+    }
+  }
+
+  if (passed === testCases.length) {
+    results += '\nВсе тесты пройдены! 🎉 (' + passed + '/' + testCases.length + ')';
+  } else {
+    results += '\nПройдено ' + passed + ' из ' + testCases.length + ' тестов.';
+  }
+
+  return results;
 }
 
 const DIFFICULTY_STYLES: Record<string, string> = {
@@ -121,7 +156,7 @@ export default function SandboxPage() {
     setOutput('Запуск тестов...\n');
     setTimeout(() => {
       if (language === 'javascript') {
-        setOutput(runJavaScript(code));
+        setOutput(runJavaScript(code, selectedTask));
       } else {
         setOutput('ℹ️ В демо-режиме доступно только JavaScript.\n\nПереключите язык на JavaScript, чтобы проверить код.');
       }
