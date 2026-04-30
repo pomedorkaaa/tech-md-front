@@ -13,11 +13,12 @@ const { tasks } = mockData as { tasks: Task[] };
 
 export default function SandboxPage() {
   const [selectedTask, setSelectedTask] = useState(tasks[0]);
-  const [code, setCode] = useState(`def sum_two_numbers(a, b):
-    # Напишите ваше решение здесь
-    return a + b`);
+  const [code, setCode] = useState(`function sum_two_numbers(a, b) {
+  // Напишите ваше решение здесь
+  return a + b;
+}`);
   const [output, setOutput] = useState('');
-  const [language, setLanguage] = useState('python');
+  const [language, setLanguage] = useState('javascript');
 
   // ─── Ресайз панели задач ─────────────────────────────
   const [panelWidth, setPanelWidth] = useState(380);
@@ -59,7 +60,54 @@ export default function SandboxPage() {
   }, []);
 
   const handleRun = () => {
-    setOutput('✓ Тест 1: sum_two_numbers(2, 3) = 5 — Пройден\n✓ Тест 2: sum_two_numbers(-1, 1) = 0 — Пройден\n✓ Тест 3: sum_two_numbers(0, 0) = 0 — Пройден\n\nВсе тесты пройдены! 🎉');
+    setOutput('Запуск тестов...\n');
+    setTimeout(() => {
+      if (language === 'javascript') {
+        try {
+          // Простейший JS компилятор (выполняем код в изоляции и вызываем функцию)
+          const userFunc = new Function('a', 'b', `
+            ${code}
+            if (typeof sum_two_numbers === 'function') {
+              return sum_two_numbers(a, b);
+            }
+            throw new Error('Функция sum_two_numbers не найдена');
+          `);
+          
+          const testCases = [
+            { a: 2, b: 3, expected: 5 },
+            { a: -1, b: 1, expected: 0 },
+            { a: 0, b: 0, expected: 0 },
+            { a: 10, b: -5, expected: 5 },
+          ];
+          
+          let results = '';
+          let passed = 0;
+          
+          testCases.forEach((tc, idx) => {
+             try {
+               const res = userFunc(tc.a, tc.b);
+               if (res === tc.expected) {
+                 results += \`✓ Тест \${idx+1}: sum_two_numbers(\${tc.a}, \${tc.b}) = \${res} — Пройден\\n\`;
+                 passed++;
+               } else {
+                 results += \`✗ Тест \${idx+1}: sum_two_numbers(\${tc.a}, \${tc.b}) = \${res} (ожидалось \${tc.expected}) — Провален\\n\`;
+               }
+             } catch (e: any) {
+               results += \`✗ Тест \${idx+1}: Ошибка выполнения - \${e.message}\\n\`;
+             }
+          });
+          
+          if (passed === testCases.length) {
+             results += '\\nВсе тесты пройдены! 🎉';
+          }
+          setOutput(results);
+        } catch(e: any) {
+          setOutput('Ошибка компиляции: ' + e.message);
+        }
+      } else {
+        setOutput('ℹ️ В демо-режиме компиляция в браузере поддерживается только для JavaScript.\n\nПожалуйста, переключите язык на JavaScript, чтобы проверить код.');
+      }
+    }, 400);
   };
 
   const difficultyStyles = {
@@ -232,7 +280,14 @@ export default function SandboxPage() {
             <Editor
               value={code}
               onValueChange={code => setCode(code)}
-              highlight={code => Prism.highlight(code, Prism.languages[language] || Prism.languages.python, language)}
+              highlight={code => {
+                try {
+                  const grammar = Prism.languages[language] || Prism.languages.javascript;
+                  return Prism.highlight(code, grammar, language || 'javascript');
+                } catch (e) {
+                  return code;
+                }
+              }}
               padding={20}
               style={{
                 fontFamily: '"Fira Code", "JetBrains Mono", monospace',
