@@ -1,4 +1,4 @@
-import { Briefcase, Users, Clock, UserCheck, Eye, Plus, ArrowRight } from 'lucide-react';
+import { Briefcase, Users, Clock, UserCheck, Plus, ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import mockData from './EmployerMockData.json';
 import type { Job, TestResult } from '../../types';
