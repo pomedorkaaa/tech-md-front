@@ -1,0 +1,88 @@
+{
+  "tasks": [
+    {
+      "id": "1",
+      "title": "Сумма двух чисел",
+      "description": "Напишите функцию sum_two_numbers, которая принимает два целых числа и возвращает их сумму.\n\nЭто базовая задача для проверки настройки окружения и понимания синтаксиса функций.",
+      "difficulty": "Easy",
+      "category": "Основы",
+      "tags": [
+        "basics",
+        "functions"
+      ],
+      "companyName": "TechFlow Systems",
+      "position": "Senior Frontend Developer",
+      "examples": [
+        {
+          "input": "sum_two_numbers(2, 3)",
+          "output": "5",
+          "explanation": "Простое сложение"
+        },
+        {
+          "input": "sum_two_numbers(-1, 1)",
+          "output": "0",
+          "explanation": "Сложение с отрицательным числом"
+        }
+      ],
+      "constraints": [
+        "-1000 <= a, b <= 1000"
+      ],
+      "solvedCount": 1842,
+      "language": "Python"
+    },
+    {
+      "id": "2",
+      "title": "Оптимизация логистики Кишинёва",
+      "description": "Необходимо разработать функцию, которая сортирует список почтовых отделений в зависимости от плотности населения в секторе (Центр, Рышкановка, Ботаника, Чеканы, Буюканы).",
+      "difficulty": "Medium",
+      "category": "Сортировка",
+      "tags": [
+        "sorting",
+        "algorithms",
+        "moldova"
+      ],
+      "companyName": "CloudBase Pro",
+      "position": "Backend Java Engineer",
+      "examples": [
+        {
+          "input": "[{ id: 1, sector: \"Centru\", load: 85 }]",
+          "output": "Отсортированный массив по весовому коэффициенту"
+        }
+      ],
+      "constraints": [
+        "Входные данные: массив объектов Offices[]",
+        "Сортировка должна учитывать весовой коэффициент каждого сектора",
+        "Временная сложность: O(n log n)"
+      ],
+      "solvedCount": 456,
+      "language": "JavaScript"
+    },
+    {
+      "id": "3",
+      "title": "Merge k Sorted Lists",
+      "description": "Объедините k отсортированных связных списков в один отсортированный список.",
+      "difficulty": "Hard",
+      "category": "Структуры данных",
+      "tags": [
+        "LinkedList",
+        "Heap",
+        "Divide & Conquer"
+      ],
+      "companyName": "DataMinds",
+      "position": "Senior Data Scientist",
+      "examples": [
+        {
+          "input": "lists = [[1,4,5],[1,3,4],[2,6]]",
+          "output": "[1,1,2,3,4,4,5,6]"
+        }
+      ],
+      "constraints": [
+        "k == lists.length",
+        "0 <= k <= 10^4",
+        "0 <= lists[i].length <= 500"
+      ],
+      "solvedCount": 89,
+      "language": "Python"
+    }
+  ]
+}

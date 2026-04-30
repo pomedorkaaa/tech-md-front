@@ -1,0 +1,26 @@
+{
+  "company": {
+    "id": "1",
+    "name": "Endava",
+    "logo": "https://images.unsplash.com/photo-1549923746-c502d488b3ea?auto=format&fit=crop&q=80&w=150&h=150",
+    "description": "We are a leading next-generation technology services provider and help accelerate disruption by delivering rapid evolution to enterprises.",
+    "location": "Chișinău, Moldova",
+    "employeesCount": "1000+",
+    "rating": 4.8,
+    "website": "https://endava.com",
+    "techStack": ["Java", ".NET", "React", "Angular", "Python"],
+    "openPositions": 15
+  },
+  "jobs": [
+    {
+      "id": "1",
+      "title": "Senior Frontend Developer",
+      "location": "Chișinău (Hybrid)"
+    },
+    {
+      "id": "2",
+      "title": "Full Stack .NET Developer",
+      "location": "Remote"
+    }
+  ]
+}

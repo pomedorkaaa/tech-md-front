@@ -1,0 +1,65 @@
+{
+  "applications": [
+    {
+      "id": "1",
+      "jobTitle": "Senior Frontend Developer",
+      "companyName": "TechFlow Systems",
+      "status": "interview",
+      "appliedAt": "2026-03-15",
+      "testScore": 92
+    },
+    {
+      "id": "2",
+      "jobTitle": "Frontend Разработчик (React)",
+      "companyName": "FinTech Moldova",
+      "status": "reviewed",
+      "appliedAt": "2026-03-18",
+      "testScore": 85
+    },
+    {
+      "id": "3",
+      "jobTitle": "Mobile Developer (iOS)",
+      "companyName": "GameDev Studio",
+      "status": "pending",
+      "appliedAt": "2026-03-22"
+    }
+  ],
+  "savedSnippets": [
+    {
+      "id": "1",
+      "icon": "javascript",
+      "title": "Array Flattening",
+      "language": "JavaScript",
+      "languageShort": "JS",
+      "description": "Рекурсивное решение для вложенных структур."
+    },
+    {
+      "id": "2",
+      "icon": "data_object",
+      "title": "Binary Search Tree",
+      "language": "Python",
+      "languageShort": "PY",
+      "description": "Оптимизированный поиск O(log n)."
+    },
+    {
+      "id": "3",
+      "icon": "css",
+      "title": "Modern Grid Layout",
+      "language": "CSS",
+      "languageShort": "CSS",
+      "description": "Адаптивная сетка для дашборда."
+    }
+  ],
+  "currentUser": {
+    "id": "1",
+    "name": "Алексей С.",
+    "email": "alexey@example.com",
+    "role": "candidate",
+    "title": "Senior Frontend",
+    "location": "Кишинёв, Молдова",
+    "codingScore": 847,
+    "solvedTasks": 142,
+    "rank": "Gold",
+    "verified": true
+  }
+}

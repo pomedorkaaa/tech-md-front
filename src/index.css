@@ -1,0 +1,170 @@
+@import "tailwindcss";
+
+/* ─── Tailwind v4: кастомные токены ──────────────────── */
+@theme {
+  /* Primary — синий акцент */
+  --color-primary: var(--tm-primary);
+  --color-primary-light: var(--tm-primary-light);
+  --color-primary-dark: var(--tm-primary-dark);
+
+  /* Фон и поверхности */
+  --color-background-dark: var(--tm-bg);
+  --color-surface: var(--tm-bg);
+  --color-surface-dark: var(--tm-surface);
+  --color-charcoal: var(--tm-card);
+  --color-charcoal-light: var(--tm-card-hover);
+  --color-surface-paper: var(--tm-surface);
+  --color-surface-elevated: var(--tm-elevated);
+  --color-surface-overlay: var(--tm-overlay);
+
+  /* Текст */
+  --color-text-primary: var(--tm-text);
+  --color-text-secondary: var(--tm-text-secondary);
+  --color-text-muted: var(--tm-text-muted);
+  --color-text-inverse: var(--tm-text-inverse);
+
+  /* Бордеры */
+  --color-border: var(--tm-border);
+  --color-border-light: var(--tm-border-light);
+  --color-border-focus: var(--tm-primary);
+
+  /* Статусные цвета */
+  --color-success: #22c55e;
+  --color-warning: #eab308;
+  --color-error: #ef4444;
+  --color-info: #3b82f6;
+
+  /* Шрифты */
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-display: 'Manrope', 'Inter', sans-serif;
+  --font-mono: 'Space Grotesk', 'JetBrains Mono', 'Fira Code', 'Cascadia Code', monospace;
+}
+
+/* ─── Тёмная тема (по умолчанию) ─────────────────────── */
+:root, .dark {
+  /* Акцентный цвет — чистый синий как в Stitch */
+  --tm-primary: #3b82f6;
+  --tm-primary-light: #60a5fa;
+  --tm-primary-dark: #2563eb;
+
+  /* Фоны — The Digital Architect (Мягкая тема) */
+  --tm-bg: #0d1321;
+  --tm-surface: #151b29;
+  --tm-card: #151b29;
+  --tm-card-hover: #242a39;
+  --tm-elevated: #242a39;
+  --tm-overlay: #333948;
+
+  /* Текст — высокий контраст, отсутствие чистого белого */
+  --tm-text: #dde2f6;
+  --tm-text-secondary: #c2c6d6;
+  --tm-text-muted: #8c909f;
+  --tm-text-inverse: #0d1321;
+
+  /* Бордеры — Ghost Border (outline-variant at 15%) */
+  --tm-border: rgba(66, 71, 84, 0.15);
+  --tm-border-light: rgba(66, 71, 84, 0.30);
+
+  color-scheme: dark;
+}
+
+/* ─── Светлая тема ───────────────────────────────────── */
+.light {
+  --tm-primary: #1313ec;
+  --tm-primary-light: #4747f5;
+  --tm-primary-dark: #0e0ebb;
+
+  --tm-bg: #f5f6fa;
+  --tm-surface: #ffffff;
+  --tm-card: #ffffff;
+  --tm-card-hover: #f0f1f5;
+  --tm-elevated: #f0f1f5;
+  --tm-overlay: #e2e4eb;
+
+  --tm-text: #111827;
+  --tm-text-secondary: #4b5563;
+  --tm-text-muted: #9ca3af;
+  --tm-text-inverse: #ffffff;
+
+  --tm-border: rgba(0, 0, 0, 0.08);
+  --tm-border-light: rgba(0, 0, 0, 0.12);
+
+  color-scheme: light;
+}
+
+/* ─── Глобальные стили ─────────────────────────────────── */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--font-sans);
+  background-color: var(--tm-bg);
+  color: var(--tm-text);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ─── Утилити-классы (Soft Dark Philosophy) ───────────────── */
+.glass {
+  background: var(--tm-surface);
+  opacity: 0.95;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--tm-border);
+}
+
+.glass-panel {
+  background: rgba(47, 53, 68, 0.6);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--tm-border);
+}
+
+.light .glass {
+  background: rgba(255, 255, 255, 0.7);
+}
+
+.gradient-primary {
+  background: linear-gradient(135deg, var(--tm-primary) 0%, var(--tm-primary-dark) 100%);
+}
+
+.gradient-card {
+  background: var(--tm-card);
+}
+
+.glow {
+  box-shadow: 0 0 20px rgba(59, 130, 246, 0.25);
+}
+
+.glow-lg {
+  box-shadow: 0 0 40px rgba(59, 130, 246, 0.35);
+}
+
+/* ─── Скроллбар ─────────────────────────────────────────── */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--tm-bg);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--tm-overlay);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--tm-border-light);
+}
+
+/* ─── Переходы для смены темы ───────────────────────────── */
+html.dark, html.light {
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
