@@ -1,5 +1,12 @@
 import { useState, useRef, useCallback, useEffect } from 'react';
 import { Play, RotateCcw, ChevronRight, Building2, GripVertical, Users } from 'lucide-react';
+import Editor from 'react-simple-code-editor';
+import Prism from 'prismjs';
+import 'prismjs/components/prism-python';
+import 'prismjs/components/prism-javascript';
+import 'prismjs/components/prism-typescript';
+import 'prismjs/components/prism-go';
+import 'prismjs/themes/prism-tomorrow.css';
 import mockData from './SandboxMockData.json';
 import type { Task } from '../../types';
 const { tasks } = mockData as { tasks: Task[] };
@@ -10,6 +17,7 @@ export default function SandboxPage() {
     # Напишите ваше решение здесь
     return a + b`);
   const [output, setOutput] = useState('');
+  const [language, setLanguage] = useState('python');
 
   // ─── Ресайз панели задач ─────────────────────────────
   const [panelWidth, setPanelWidth] = useState(380);
@@ -61,7 +69,7 @@ export default function SandboxPage() {
   };
 
   return (
-    <div className="h-[calc(100vh-4rem)] flex flex-col md:flex-row">
+    <div className="h-[calc(100vh-4rem)] flex flex-col-reverse md:flex-row">
       {/* ─── Левая панель: задачи ─────────────────────── */}
       <div
         className="shrink-0 border-b md:border-b-0 md:border-r border-border bg-charcoal flex flex-col overflow-hidden h-1/2 md:h-full"
@@ -191,11 +199,15 @@ export default function SandboxPage() {
         {/* Тулбар */}
         <div className="flex items-center justify-between px-4 py-2.5 border-b border-border bg-charcoal">
           <div className="flex items-center gap-2">
-            <select className="bg-surface-elevated border border-border rounded-lg px-3 py-1.5 text-sm text-text-primary outline-none focus:border-primary/50">
-              <option>Python</option>
-              <option>JavaScript</option>
-              <option>TypeScript</option>
-              <option>Go</option>
+            <select 
+              value={language}
+              onChange={e => setLanguage(e.target.value)}
+              className="bg-surface-elevated border border-border rounded-lg px-3 py-1.5 text-sm text-text-primary outline-none focus:border-primary/50"
+            >
+              <option value="python">Python</option>
+              <option value="javascript">JavaScript</option>
+              <option value="typescript">TypeScript</option>
+              <option value="go">Go</option>
             </select>
           </div>
           <div className="flex items-center gap-2">
@@ -216,12 +228,19 @@ export default function SandboxPage() {
 
         {/* Редактор */}
         <div className="flex-1 flex flex-col">
-          <div className="flex-1 relative">
-            <textarea
+          <div className="flex-1 relative overflow-auto bg-background-dark">
+            <Editor
               value={code}
-              onChange={(e) => setCode(e.target.value)}
-              className="absolute inset-0 w-full h-full bg-background-dark p-5 text-sm font-mono text-text-primary outline-none resize-none leading-relaxed"
-              spellCheck={false}
+              onValueChange={code => setCode(code)}
+              highlight={code => Prism.highlight(code, Prism.languages[language] || Prism.languages.python, language)}
+              padding={20}
+              style={{
+                fontFamily: '"Fira Code", "JetBrains Mono", monospace',
+                fontSize: 14,
+                minHeight: '100%',
+              }}
+              textareaClassName="focus:outline-none"
+              className="text-text-primary w-full h-full"
             />
           </div>
 
