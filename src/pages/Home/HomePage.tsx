@@ -2,8 +2,10 @@ import { Link } from 'react-router-dom';
 import { Search, ArrowRight, Flame, Code, Building2, Briefcase } from 'lucide-react';
 import mockData from './HomeMockData.json';
 import sandboxData from '../Sandbox/SandboxMockData.json';
-const { jobs, companies } = mockData as { jobs: any[], companies: any[] };
-const { tasks } = sandboxData as any;
+import type { Job, Company, Task } from '../../types';
+
+const { jobs, companies } = mockData as { jobs: Job[], companies: Company[] };
+const { tasks } = sandboxData as { tasks: Task[] };
 
 export default function HomePage() {
   const featuredJobs = jobs.slice(0, 4);

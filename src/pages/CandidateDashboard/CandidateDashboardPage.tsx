@@ -1,8 +1,10 @@
 import { Trophy, FileText, Bookmark, TrendingUp, CheckCircle, Clock, XCircle, AlertCircle, ArrowRight } from 'lucide-react';
 import mockData from './CandidateMockData.json';
 import sandboxData from '../Sandbox/SandboxMockData.json';
-const { currentUser, applications, savedSnippets } = mockData as any;
-const { tasks } = sandboxData as any;
+import type { User, Application, SavedSnippet, Task } from '../../types';
+
+const { currentUser, applications, savedSnippets } = mockData as { currentUser: User, applications: Application[], savedSnippets: SavedSnippet[] };
+const { tasks } = sandboxData as { tasks: Task[] };
 import { Link } from 'react-router-dom';
 
 const statusConfig = {

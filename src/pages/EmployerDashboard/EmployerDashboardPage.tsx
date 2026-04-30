@@ -1,6 +1,7 @@
 import { Briefcase, Users, Clock, UserCheck, Eye, Plus, ArrowRight } from 'lucide-react';
 import mockData from './EmployerMockData.json';
-const { jobs, testResults } = mockData as any;
+import type { Job, TestResult } from '../../types';
+const { jobs, testResults } = mockData as { jobs: Job[], testResults: TestResult[] };
 
 export default function EmployerDashboard() {
   const activeJobs = jobs.slice(0, 3);

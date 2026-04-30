@@ -13,14 +13,15 @@ import adminData from '../pages/AdminDashboard/AdminMockData.json';
 import chatData from '../pages/Chat/ChatMockData.json';
 import sandboxData from '../pages/Sandbox/SandboxMockData.json';
 
+import type { Job, Company, Task, User, Application, SavedSnippet, TestResult, ActivityLog, Conversation } from '../types';
+
 const { jobs } = jobsData as { jobs: Job[] };
 const { companies } = companiesData as { companies: Company[] };
-const { currentUser, applications, savedSnippets } = candidateData as unknown as { currentUser: User, applications: any[], savedSnippets: any[] };
-const { testResults } = employerData as { testResults: any[] };
-const { activityLogs, techStackStats } = adminData as { activityLogs: any[], techStackStats: any[] };
-const { conversations } = chatData as { conversations: any[] };
+const { currentUser, applications, savedSnippets } = candidateData as unknown as { currentUser: User, applications: Application[], savedSnippets: SavedSnippet[] };
+const { testResults } = employerData as { testResults: TestResult[] };
+const { activityLogs, techStackStats } = adminData as { activityLogs: ActivityLog[], techStackStats: { name: string, value: number }[] };
+const { conversations } = chatData as { conversations: Conversation[] };
 const { tasks } = sandboxData as { tasks: Task[] };
-import type { Job, Company, Task, User } from '../types';
 
 // Симуляция задержки сети
 const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));

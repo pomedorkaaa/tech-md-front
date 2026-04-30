@@ -1,7 +1,8 @@
 import { useState, useRef, useCallback, useEffect } from 'react';
 import { Play, RotateCcw, ChevronRight, Building2, GripVertical, Users } from 'lucide-react';
 import mockData from './SandboxMockData.json';
-const { tasks } = mockData as any;
+import type { Task } from '../../types';
+const { tasks } = mockData as { tasks: Task[] };
 
 export default function SandboxPage() {
   const [selectedTask, setSelectedTask] = useState(tasks[0]);

@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { Send, Paperclip, Code2, MoreVertical } from 'lucide-react';
 import mockData from './ChatMockData.json';
-const { conversations } = mockData as any;
+import type { Conversation } from '../../types';
+const { conversations } = mockData as { conversations: Conversation[] };
 
 interface ChatMessage {
   id: string;
