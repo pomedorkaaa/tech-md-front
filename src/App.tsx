@@ -14,6 +14,7 @@ import CreateTaskPage from './pages/CreateTask/CreateTaskPage';
 import SolutionViewPage from './pages/SolutionView/SolutionViewPage';
 import LoginPage from './pages/Auth/LoginPage';
 import RegisterPage from './pages/Auth/RegisterPage';
+import UserProfilePage from './pages/UserProfile/UserProfilePage';
 
 export default function App() {
   return (
@@ -30,6 +31,7 @@ export default function App() {
           <Route path="/jobs/:id" element={<JobDetailPage />} />
           <Route path="/companies" element={<CompaniesPage />} />
           <Route path="/companies/:id" element={<CompanyOverviewPage />} />
+          <Route path="/profile" element={<UserProfilePage />} />
           <Route path="/dashboard" element={<CandidateDashboard />} />
           <Route path="/employer" element={<EmployerDashboard />} />
           <Route path="/employer/tasks/new" element={<CreateTaskPage />} />

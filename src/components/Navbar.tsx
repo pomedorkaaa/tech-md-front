@@ -1,5 +1,5 @@
 import { Link, useLocation } from 'react-router-dom';
-import { Search, Menu, X, Sun, Moon } from 'lucide-react';
+import { Search, Menu, X, Sun, Moon, User } from 'lucide-react';
 import { useState } from 'react';
 import { useTheme } from '../contexts/ThemeContext';
 
@@ -72,6 +72,13 @@ export default function Navbar() {
               className="rounded-lg bg-primary px-4 py-1.5 text-sm font-bold text-white hover:bg-primary-dark transition-all shadow-md shadow-primary/20"
             >
               Регистрация
+            </Link>
+            <Link
+              to="/profile"
+              className="flex items-center justify-center w-8 h-8 rounded-full bg-surface-elevated border border-border text-text-muted hover:text-primary transition-colors ml-2"
+              title="Профиль"
+            >
+              <User size={16} />
             </Link>
           </div>
 
