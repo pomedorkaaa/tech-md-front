@@ -69,10 +69,10 @@ export default function JobsPage() {
         </button>
       </div>
 
-      <div className="flex gap-6">
+      <div className="flex flex-col lg:flex-row gap-6">
         {/* Фильтры (сайдбар) */}
         {showFilters && (
-          <aside className="w-64 shrink-0 space-y-6">
+          <aside className="w-full lg:w-64 shrink-0 space-y-6">
             {/* Зарплата */}
             <div className="gradient-card rounded-xl p-5 border border-border">
               <h3 className="text-sm font-semibold text-text-primary mb-3">Зарплата</h3>

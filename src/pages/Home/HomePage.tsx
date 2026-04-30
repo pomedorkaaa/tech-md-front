@@ -55,13 +55,13 @@ export default function HomePage() {
               </form>
 
               <div className="mt-4 overflow-x-auto pb-2 scrollbar-hide">
-                <div className="flex w-max lg:w-auto items-center gap-x-4 gap-y-1.5 text-[10px] font-bold uppercase tracking-widest text-text-muted">
+                <div className="flex flex-wrap lg:w-auto items-center gap-x-4 gap-y-1.5 text-[10px] font-bold uppercase tracking-widest text-text-muted">
                   <span className="text-primary/60">Топ категории:</span>
                   {['Frontend', 'Python', 'QA Automation', 'DevOps'].map(tag => (
                     <Link
                       key={tag}
                       to={`/jobs?q=${tag}`}
-                      className="hover:text-primary transition-colors whitespace-nowrap"
+                      className="hover:text-primary transition-colors"
                     >
                       {tag}
                     </Link>

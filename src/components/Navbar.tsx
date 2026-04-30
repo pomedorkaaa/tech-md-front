@@ -118,7 +118,7 @@ export default function Navbar() {
                 {link.label}
               </Link>
             ))}
-            <div className="pt-3 border-t border-border flex gap-2">
+            <div className="pt-3 border-t border-border flex flex-col gap-2">
               <Link
                 to="/login"
                 onClick={() => setMobileOpen(false)}
