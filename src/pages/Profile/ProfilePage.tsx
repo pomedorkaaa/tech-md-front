@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
-import { Settings, Mail, MapPin, Trophy, Code, Star, Edit3, ExternalLink, CheckCircle } from 'lucide-react';
+import { Settings, Mail, MapPin, Trophy, Code, Star, Edit3, CheckCircle } from 'lucide-react';
 
 export default function ProfilePage() {
   const { user } = useAuth();

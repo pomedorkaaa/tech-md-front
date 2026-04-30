@@ -1,4 +1,3 @@
-import { Link } from 'react-router-dom';
 import { Calendar, ArrowRight } from 'lucide-react';
 
 const posts = [
