@@ -6,3 +6,8 @@ dist-ssr/
 .env.*.local
 .DS_Store
 AGENTS.MD
+
+# Environment variables
+.env
+.env.*
+!.env.example

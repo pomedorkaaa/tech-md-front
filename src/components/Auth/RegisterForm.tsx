@@ -1,28 +1,49 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { User, Briefcase, Mail, Lock, ShieldCheck, BadgeCheck } from 'lucide-react';
+import { useAuth } from '../../contexts/AuthContext';
 
 export default function RegisterForm() {
   const [formData, setFormData] = useState({
-    accountType: 'candidate' as 'candidate' | 'company',
+    accountType: 'candidate' as 'candidate' | 'employer' | 'admin',
     name: '',
     email: '',
     password: '',
     password_confirm: ''
   });
 
+  const { register } = useAuth();
+  const navigate = useNavigate();
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleAccountTypeChange = (type: 'candidate' | 'company') => {
+  const handleAccountTypeChange = (type: 'candidate' | 'employer' | 'admin') => {
     setFormData(prev => ({ ...prev, accountType: type }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('Register attempt', formData);
+    if (formData.password !== formData.password_confirm) {
+      alert("Пароли не совпадают!");
+      return;
+    }
+    
+    try {
+      await register(formData.name, formData.email, formData.password, formData.accountType);
+      
+      if (formData.accountType === 'admin') {
+         navigate('/admin');
+      } else if (formData.accountType === 'employer') {
+         navigate('/employer');
+      } else {
+         navigate('/dashboard');
+      }
+    } catch (error) {
+      console.error('Ошибка регистрации', error);
+    }
   };
 
   return (
@@ -53,9 +74,9 @@ export default function RegisterForm() {
               </button>
 
               <button
-                onClick={() => handleAccountTypeChange('company')}
+                onClick={() => handleAccountTypeChange('employer')}
                 className={`flex items-center justify-center gap-3 py-4 rounded-lg transition-all duration-200 active:scale-95 ${
-                  formData.accountType === 'company'
+                  formData.accountType === 'employer'
                     ? 'bg-primary/10 border border-primary/30 text-primary'
                     : 'bg-charcoal-light text-text-muted hover:text-text-primary border border-transparent'
                 }`}

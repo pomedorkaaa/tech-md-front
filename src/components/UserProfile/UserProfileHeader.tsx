@@ -4,7 +4,7 @@ import type { User as UserType } from '../../types';
 
 interface Props {
   profile: UserType;
-  formData: any;
+  formData: Partial<UserType>;
   isEditing: boolean;
   handleChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   handleSubmit: (e: React.FormEvent) => void;

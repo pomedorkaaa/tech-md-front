@@ -18,6 +18,14 @@ import SolutionViewPage from './pages/SolutionView/SolutionViewPage';
 import LoginPage from './pages/Auth/LoginPage';
 import RegisterPage from './pages/Auth/RegisterPage';
 import UserProfilePage from './pages/UserProfile/UserProfilePage';
+import SettingsPage from './pages/Settings/SettingsPage';
+import ProtectedRoute from './components/Auth/ProtectedRoute';
+import AboutPage from './pages/Static/AboutPage';
+import SupportPage from './pages/Static/SupportPage';
+import BlogPage from './pages/Static/BlogPage';
+import TermsPage from './pages/Static/TermsPage';
+import PrivacyPage from './pages/Static/PrivacyPage';
+import CookiesPage from './pages/Static/CookiesPage';
 
 export default function App() {
   return (
@@ -29,22 +37,47 @@ export default function App() {
 
         {/* Main app routes with global layout */}
         <Route element={<Layout />}>
+          {/* Публичные страницы */}
           <Route path="/" element={<HomePage />} />
           <Route path="/jobs" element={<JobsPage />} />
           <Route path="/jobs/:id" element={<JobDetailPage />} />
           <Route path="/companies" element={<CompaniesPage />} />
           <Route path="/companies/:id" element={<CompanyOverviewPage />} />
-          <Route path="/profile" element={<UserProfilePage />} />
-          <Route path="/dashboard" element={<CandidateDashboard />} />
-          <Route path="/employer" element={<EmployerDashboard />} />
-          <Route path="/employer/companies/new" element={<CreateCompanyPage />} />
-          <Route path="/employer/jobs/new" element={<CreateJobPage />} />
-          <Route path="/employer/tests/:id" element={<TestResultDetailsPage />} />
-          <Route path="/employer/tasks/new" element={<CreateTaskPage />} />
-          <Route path="/employer/solutions/:id" element={<SolutionViewPage />} />
-          <Route path="/admin" element={<AdminDashboard />} />
           <Route path="/sandbox" element={<SandboxPage />} />
-          <Route path="/chat" element={<ChatPage />} />
+          
+          <Route path="/about" element={<AboutPage />} />
+          <Route path="/support" element={<SupportPage />} />
+          <Route path="/blog" element={<BlogPage />} />
+          <Route path="/terms" element={<TermsPage />} />
+          <Route path="/privacy" element={<PrivacyPage />} />
+          <Route path="/cookies" element={<CookiesPage />} />
+
+          {/* Маршруты для всех авторизованных пользователей */}
+          <Route element={<ProtectedRoute />}>
+            <Route path="/profile" element={<UserProfilePage />} />
+            <Route path="/settings" element={<SettingsPage />} />
+            <Route path="/chat" element={<ChatPage />} />
+          </Route>
+
+          {/* Маршруты для кандидатов */}
+          <Route element={<ProtectedRoute allowedRoles={['candidate', 'admin']} />}>
+            <Route path="/dashboard" element={<CandidateDashboard />} />
+          </Route>
+
+          {/* Маршруты для работодателей */}
+          <Route element={<ProtectedRoute allowedRoles={['employer', 'admin']} />}>
+            <Route path="/employer" element={<EmployerDashboard />} />
+            <Route path="/employer/companies/new" element={<CreateCompanyPage />} />
+            <Route path="/employer/jobs/new" element={<CreateJobPage />} />
+            <Route path="/employer/tests/:id" element={<TestResultDetailsPage />} />
+            <Route path="/employer/tasks/new" element={<CreateTaskPage />} />
+            <Route path="/employer/solutions/:id" element={<SolutionViewPage />} />
+          </Route>
+
+          {/* Маршруты для администраторов */}
+          <Route element={<ProtectedRoute allowedRoles={['admin']} />}>
+            <Route path="/admin" element={<AdminDashboard />} />
+          </Route>
         </Route>
       </Routes>
     </BrowserRouter>

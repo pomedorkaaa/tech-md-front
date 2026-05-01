@@ -47,7 +47,8 @@ export default function SandboxPage() {
   );
 
   useEffect(() => {
-    setIsMobile(window.innerWidth < 768);
+    const handleWindowResize = () => setIsMobile(window.innerWidth < 768);
+    handleWindowResize();
 
     const handleMouseMove = (e: MouseEvent) => {
       if (isResizing.current) {
@@ -69,7 +70,6 @@ export default function SandboxPage() {
       document.body.style.cursor = '';
       document.body.style.userSelect = '';
     };
-    const handleWindowResize = () => setIsMobile(window.innerWidth < 768);
 
     window.addEventListener('mousemove', handleMouseMove);
     window.addEventListener('mouseup', handleMouseUp);

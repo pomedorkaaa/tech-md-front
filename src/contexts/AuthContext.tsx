@@ -5,7 +5,7 @@ interface AuthContextType {
   user: User | null;
   isAuthenticated: boolean;
   login: (email: string, password: string) => Promise<void>;
-  register: (name: string, email: string, password: string, role: 'candidate' | 'employer') => Promise<void>;
+  register: (name: string, email: string, password: string, role: 'candidate' | 'employer' | 'admin') => Promise<void>;
   logout: () => void;
   updateUser: (updates: Partial<User>) => void;
 }
@@ -38,6 +38,16 @@ const mockEmployerUser: User = {
   verified: true,
 };
 
+const mockAdminUser: User = {
+  id: 'u-3',
+  name: 'Admin',
+  email: 'admin@techmoldova.md',
+  role: 'admin',
+  title: 'System Administrator',
+  location: 'Кишинёв, Молдова',
+  verified: true,
+};
+
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(() => {
     try {
@@ -59,21 +69,23 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const login = async (email: string, _password: string) => {
     // Mock: определяем роль по email
     await new Promise(resolve => setTimeout(resolve, 300));
-    if (email.includes('employer') || email.includes('techflow')) {
+    if (email.includes('admin')) {
+      setUser(mockAdminUser);
+    } else if (email.includes('employer') || email.includes('techflow')) {
       setUser(mockEmployerUser);
     } else {
       setUser(mockCandidateUser);
     }
   };
 
-  const register = async (name: string, email: string, _password: string, role: 'candidate' | 'employer') => {
+  const register = async (name: string, email: string, _password: string, role: 'candidate' | 'employer' | 'admin') => {
     await new Promise(resolve => setTimeout(resolve, 300));
     const newUser: User = {
       id: `u-${Date.now()}`,
       name,
       email,
       role,
-      title: role === 'candidate' ? 'Junior Developer' : 'Recruiter',
+      title: role === 'candidate' ? 'Junior Developer' : role === 'employer' ? 'Recruiter' : 'Admin',
       location: 'Молдова',
       codingScore: 0,
       solvedTasks: 0,

@@ -1,20 +1,36 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from '../../contexts/AuthContext';
 
 export default function LoginForm() {
   const [formData, setFormData] = useState({
     email: '',
     password: ''
   });
+  const { login } = useAuth();
+  const navigate = useNavigate();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('Login attempt', formData);
+    try {
+      await login(formData.email, formData.password);
+      
+      // Перенаправляем на дашборд в зависимости от роли (пока просто на профиль)
+      if (formData.email.includes('admin')) {
+         navigate('/admin');
+      } else if (formData.email.includes('employer') || formData.email.includes('techflow')) {
+         navigate('/employer');
+      } else {
+         navigate('/dashboard');
+      }
+    } catch (error) {
+      console.error('Ошибка входа', error);
+    }
   };
 
   return (
