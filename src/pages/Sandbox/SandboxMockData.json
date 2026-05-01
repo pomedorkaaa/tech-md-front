@@ -6,121 +6,83 @@
       "description": "Напишите функцию sum_two_numbers, которая принимает два целых числа и возвращает их сумму.\n\nЭто базовая задача для проверки настройки окружения и понимания синтаксиса функций.",
       "difficulty": "Easy",
       "category": "Основы",
-      "tags": ["basics", "functions"],
+      "tags": [
+        "basics",
+        "functions"
+      ],
       "companyName": "TechFlow Systems",
       "position": "Senior Frontend Developer",
       "examples": [
-        { "input": "sum_two_numbers(2, 3)", "output": "5", "explanation": "Простое сложение" },
-        { "input": "sum_two_numbers(-1, 1)", "output": "0", "explanation": "Сложение с отрицательным числом" }
+        {
+          "input": "sum_two_numbers(2, 3)",
+          "output": "5",
+          "explanation": "Простое сложение"
+        },
+        {
+          "input": "sum_two_numbers(-1, 1)",
+          "output": "0",
+          "explanation": "Сложение с отрицательным числом"
+        }
       ],
-      "constraints": ["-1000 <= a, b <= 1000"],
+      "constraints": [
+        "-1000 <= a, b <= 1000"
+      ],
       "solvedCount": 1842,
-      "language": "JavaScript",
-      "defaultCode": "function sum_two_numbers(a, b) {\n  // Напишите ваше решение здесь\n}",
-      "functionName": "sum_two_numbers",
-      "testCases": [
-        { "args": [2, 3], "expected": 5, "label": "sum_two_numbers(2, 3)" },
-        { "args": [-1, 1], "expected": 0, "label": "sum_two_numbers(-1, 1)" },
-        { "args": [0, 0], "expected": 0, "label": "sum_two_numbers(0, 0)" },
-        { "args": [10, -5], "expected": 5, "label": "sum_two_numbers(10, -5)" },
-        { "args": [999, 1], "expected": 1000, "label": "sum_two_numbers(999, 1)" }
-      ]
+      "language": "Python"
     },
     {
       "id": "2",
       "title": "Оптимизация логистики Кишинёва",
-      "description": "Необходимо разработать функцию sortOffices, которая принимает массив объектов почтовых отделений и возвращает его отсортированным по убыванию поля load (нагрузка).\n\nКаждый объект имеет поля: id (число), sector (строка), load (число).",
+      "description": "Необходимо разработать функцию, которая сортирует список почтовых отделений в зависимости от плотности населения в секторе (Центр, Рышкановка, Ботаника, Чеканы, Буюканы).",
       "difficulty": "Medium",
       "category": "Сортировка",
-      "tags": ["sorting", "algorithms", "moldova"],
+      "tags": [
+        "sorting",
+        "algorithms",
+        "moldova"
+      ],
       "companyName": "CloudBase Pro",
       "position": "Backend Java Engineer",
       "examples": [
         {
-          "input": "sortOffices([{id:1, sector:'Centru', load:85}, {id:2, sector:'Botanica', load:95}])",
-          "output": "[{id:2, sector:'Botanica', load:95}, {id:1, sector:'Centru', load:85}]"
+          "input": "[{ id: 1, sector: \"Centru\", load: 85 }]",
+          "output": "Отсортированный массив по весовому коэффициенту"
         }
       ],
       "constraints": [
-        "Входные данные: массив объектов {id, sector, load}",
-        "Сортировка по убыванию load",
+        "Входные данные: массив объектов Offices[]",
+        "Сортировка должна учитывать весовой коэффициент каждого сектора",
         "Временная сложность: O(n log n)"
       ],
       "solvedCount": 456,
-      "language": "JavaScript",
-      "defaultCode": "function sortOffices(offices) {\n  // Отсортируйте массив отделений по убыванию load\n}",
-      "functionName": "sortOffices",
-      "testCases": [
-        {
-          "args": [[{"id":1,"sector":"Centru","load":85},{"id":2,"sector":"Botanica","load":60},{"id":3,"sector":"Riscani","load":95}]],
-          "expected": [{"id":3,"sector":"Riscani","load":95},{"id":1,"sector":"Centru","load":85},{"id":2,"sector":"Botanica","load":60}],
-          "label": "sortOffices([Centru:85, Botanica:60, Riscani:95])"
-        },
-        {
-          "args": [[{"id":1,"sector":"A","load":10},{"id":2,"sector":"B","load":10}]],
-          "expected": [{"id":1,"sector":"A","load":10},{"id":2,"sector":"B","load":10}],
-          "label": "sortOffices([A:10, B:10]) — одинаковая нагрузка"
-        },
-        {
-          "args": [[{"id":1,"sector":"Solo","load":50}]],
-          "expected": [{"id":1,"sector":"Solo","load":50}],
-          "label": "sortOffices([Solo:50]) — один элемент"
-        },
-        {
-          "args": [[]],
-          "expected": [],
-          "label": "sortOffices([]) — пустой массив"
-        }
-      ]
+      "language": "JavaScript"
     },
     {
       "id": "3",
       "title": "Merge k Sorted Lists",
-      "description": "Напишите функцию mergeKLists, которая принимает массив отсортированных массивов и объединяет их в один отсортированный массив.\n\nНапример, [[1,4,5],[1,3,4],[2,6]] → [1,1,2,3,4,4,5,6].",
+      "description": "Объедините k отсортированных связных списков в один отсортированный список.",
       "difficulty": "Hard",
       "category": "Структуры данных",
-      "tags": ["arrays", "sorting", "merge"],
+      "tags": [
+        "LinkedList",
+        "Heap",
+        "Divide & Conquer"
+      ],
       "companyName": "DataMinds",
       "position": "Senior Data Scientist",
       "examples": [
-        { "input": "mergeKLists([[1,4,5],[1,3,4],[2,6]])", "output": "[1,1,2,3,4,4,5,6]" }
+        {
+          "input": "lists = [[1,4,5],[1,3,4],[2,6]]",
+          "output": "[1,1,2,3,4,4,5,6]"
+        }
       ],
       "constraints": [
-        "0 <= k <= 100",
-        "0 <= lists[i].length <= 500",
-        "Каждый вложенный массив уже отсортирован по возрастанию"
+        "k == lists.length",
+        "0 <= k <= 10^4",
+        "0 <= lists[i].length <= 500"
       ],
       "solvedCount": 89,
-      "language": "JavaScript",
-      "defaultCode": "function mergeKLists(lists) {\n  // Объедините k отсортированных массивов в один\n}",
-      "functionName": "mergeKLists",
-      "testCases": [
-        {
-          "args": [[[1,4,5],[1,3,4],[2,6]]],
-          "expected": [1,1,2,3,4,4,5,6],
-          "label": "mergeKLists([[1,4,5],[1,3,4],[2,6]])"
-        },
-        {
-          "args": [[]],
-          "expected": [],
-          "label": "mergeKLists([]) — пустой вход"
-        },
-        {
-          "args": [[[],[]]],
-          "expected": [],
-          "label": "mergeKLists([[],[]]) — пустые списки"
-        },
-        {
-          "args": [[[5],[3],[1]]],
-          "expected": [1,3,5],
-          "label": "mergeKLists([[5],[3],[1]])"
-        },
-        {
-          "args": [[[1,2,3]]],
-          "expected": [1,2,3],
-          "label": "mergeKLists([[1,2,3]]) — один список"
-        }
-      ]
+      "language": "Python"
     }
   ]
 }
