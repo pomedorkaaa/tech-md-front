@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import mockData from './JobsMockData.json';
 import type { Job } from '../../types';
 
@@ -12,23 +13,76 @@ const experienceFilters = ['Любой', '0-1 год', '1-3 года', '3-5 ле
 const techFilters = ['React', 'Python', 'Java', 'Go', '.NET', 'Swift', 'TypeScript'];
 
 export default function JobsPage() {
+  const [searchParams] = useSearchParams();
+
   const [filterState, setFilterState] = useState({
     searchQuery: '',
     selectedExperience: 'Любой',
     selectedTechs: [] as string[],
-    showFilters: true
+    showFilters: true,
+    salaryMin: '',
+    salaryMax: '',
+    salaryCurrency: '€',
   });
 
+  const [exchangeRates, setExchangeRates] = useState<Record<string, number>>({
+    '€': 1,
+    '$': 1.1, // Approximate fallback 1 EUR = 1.1 USD
+    'MDL': 20.0, // Approximate fallback 1 EUR = 20 MDL
+  });
+
+  // Fetch real exchange rates on mount
+  useEffect(() => {
+    fetch('https://open.er-api.com/v6/latest/EUR')
+      .then(res => res.json())
+      .then(data => {
+        if (data && data.rates) {
+          setExchangeRates({
+            '€': 1,
+            '$': data.rates.USD || 1.1,
+            'MDL': data.rates.MDL || 20.0,
+          });
+        }
+      })
+      .catch(err => console.error('Failed to fetch exchange rates', err));
+  }, []);
+
+  // Read ?company= from URL on mount
+  useEffect(() => {
+    const companyParam = searchParams.get('company');
+    if (companyParam) {
+      setFilterState(prev => ({ ...prev, searchQuery: companyParam }));
+    }
+  }, [searchParams]);
+
   const filteredJobs = jobs.filter(job => {
-    const matchesSearch = !filterState.searchQuery ||
-      job.title.toLowerCase().includes(filterState.searchQuery.toLowerCase()) ||
-      job.company.name.toLowerCase().includes(filterState.searchQuery.toLowerCase()) ||
-      job.techStack.some(t => t.toLowerCase().includes(filterState.searchQuery.toLowerCase()));
+    const q = filterState.searchQuery.toLowerCase();
+    const matchesSearch = !q ||
+      job.title.toLowerCase().includes(q) ||
+      job.company.name.toLowerCase().includes(q) ||
+      job.techStack.some(t => t.toLowerCase().includes(q));
 
     const matchesTech = filterState.selectedTechs.length === 0 ||
       job.techStack.some(t => filterState.selectedTechs.includes(t));
 
-    return matchesSearch && matchesTech;
+    // Salary filter with currency conversion
+    const minSalInput = filterState.salaryMin ? Number(filterState.salaryMin) : 0;
+    const maxSalInput = filterState.salaryMax ? Number(filterState.salaryMax) : Infinity;
+
+    // Approximate exchange rates to a base currency (EUR)
+    const inputCurrencyRate = exchangeRates[filterState.salaryCurrency] || 1;
+    const jobCurrencyRate = exchangeRates[job.salary.currency] || 1;
+
+    // Convert both to EUR for comparison (value / rate)
+    const inputMinEur = minSalInput / inputCurrencyRate;
+    const inputMaxEur = maxSalInput === Infinity ? Infinity : maxSalInput / inputCurrencyRate;
+    const jobMinEur = job.salary.min / jobCurrencyRate;
+    const jobMaxEur = job.salary.max / jobCurrencyRate;
+
+    // Consider it a match if the job's salary range overlaps with the requested range
+    const matchesSalary = jobMaxEur >= inputMinEur && jobMinEur <= inputMaxEur;
+
+    return matchesSearch && matchesTech && matchesSalary;
   });
 
   const toggleTech = (tech: string) => {
@@ -59,13 +113,26 @@ export default function JobsPage() {
             onTechToggle={toggleTech}
             experienceFilters={experienceFilters}
             techFilters={techFilters}
+            salaryMin={filterState.salaryMin}
+            salaryMax={filterState.salaryMax}
+            salaryCurrency={filterState.salaryCurrency}
+            onSalaryMinChange={(v) => setFilterState(prev => ({ ...prev, salaryMin: v }))}
+            onSalaryMaxChange={(v) => setFilterState(prev => ({ ...prev, salaryMax: v }))}
+            onSalaryCurrencyChange={(v) => setFilterState(prev => ({ ...prev, salaryCurrency: v }))}
           />
         )}
 
         <div className="flex-1 space-y-4">
-          {filteredJobs.map(job => (
-            <JobCard key={job.id} job={job} />
-          ))}
+          {filteredJobs.length === 0 ? (
+            <div className="text-center py-16 text-text-muted">
+              <p className="text-lg font-semibold mb-1">Вакансии не найдены</p>
+              <p className="text-sm">Попробуйте изменить параметры поиска или фильтры</p>
+            </div>
+          ) : (
+            filteredJobs.map(job => (
+              <JobCard key={job.id} job={job} />
+            ))
+          )}
         </div>
       </div>
     </div>

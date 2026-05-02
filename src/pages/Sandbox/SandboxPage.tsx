@@ -1,5 +1,5 @@
 import { useState, useRef, useCallback, useEffect, Suspense, lazy } from 'react';
-import { Play, RotateCcw, ChevronRight, ChevronDown, Building2, GripVertical, GripHorizontal, Users, CheckCircle2, XCircle, AlertTriangle } from 'lucide-react';
+import { Play, RotateCcw, ChevronRight, ChevronDown, Building2, GripVertical, GripHorizontal, Users, CheckCircle2, XCircle, AlertTriangle, Send } from 'lucide-react';
 import type { Task } from '@/types';
 import mockData from './SandboxMockData.json';
 
@@ -58,6 +58,7 @@ export default function SandboxPage() {
   const [isRunning, setIsRunning] = useState(false);
   const [mobileTab, setMobileTab] = useState<MobileTab>('task');
   const [taskListOpen, setTaskListOpen] = useState(false);
+  const [isSubmitted, setIsSubmitted] = useState(false);
 
   // ─── Resize state ────────────────────────────────────
   const [panelWidth, setPanelWidth] = useState(380);
@@ -121,6 +122,18 @@ export default function SandboxPage() {
     setCode(selectedTask.defaultCode ?? '');
     setTestResults([]);
     setSummary('');
+    setIsSubmitted(false);
+  };
+
+  const allPassed = testResults.length > 0 && testResults.every(r => r.passed);
+
+  const handleSubmit = () => {
+    if (!allPassed) {
+      alert('Сначала решите задачу и пройдите все тесты!');
+      return;
+    }
+    setIsSubmitted(true);
+    setTimeout(() => setIsSubmitted(false), 3000);
   };
 
   // ─── Shared components ───────────────────────────────
@@ -242,6 +255,18 @@ export default function SandboxPage() {
           <Play size={compact ? 13 : 14} />
           <span>{isRunning ? 'Запуск...' : 'Запустить'}</span>
         </button>
+        <button onClick={handleSubmit}
+          disabled={!allPassed}
+          className={`flex items-center gap-1.5 px-4 py-1.5 rounded-lg text-sm font-bold transition-all shadow-md ${
+            isSubmitted
+              ? 'bg-success text-white shadow-success/20'
+              : !allPassed
+              ? 'bg-surface-elevated border border-border text-text-muted opacity-50 cursor-not-allowed shadow-none'
+              : 'bg-surface-elevated border border-border text-text-primary hover:border-primary/50 hover:text-primary shadow-none'
+          }`}>
+          {isSubmitted ? <CheckCircle2 size={compact ? 13 : 14} /> : <Send size={compact ? 13 : 14} />}
+          {!compact && <span>{isSubmitted ? 'Отправлено!' : 'Отправить'}</span>}
+        </button>
       </div>
     </div>
   );
@@ -253,7 +278,13 @@ export default function SandboxPage() {
           value={code}
           language="js"
           placeholder="Напишите ваш код здесь..."
-          onChange={e => setCode(e.target.value)}
+          onChange={e => {
+            setCode(e.target.value);
+            if (testResults.length > 0) {
+              setTestResults([]);
+              setSummary('');
+            }
+          }}
           padding={20}
           style={{
             fontSize: 14,
