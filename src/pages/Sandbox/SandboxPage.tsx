@@ -1,5 +1,5 @@
 import { useState, useRef, useCallback, useEffect, Suspense, lazy } from 'react';
-import { Play, RotateCcw, ChevronRight, ChevronDown, Building2, GripVertical, GripHorizontal, Users, CheckCircle2, XCircle, AlertTriangle, Send } from 'lucide-react';
+import { Play, RotateCcw, ChevronRight, ChevronDown, Building2, GripVertical, GripHorizontal, Users, CheckCircle2, XCircle, Send } from 'lucide-react';
 import type { Task } from '@/types';
 import mockData from './SandboxMockData.json';
 
