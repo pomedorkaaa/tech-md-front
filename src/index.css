@@ -1,4 +1,8 @@
 @import "tailwindcss";
+@import "./fonts/inter/Inter.css";
+@import "./fonts/manrope/Manrope.css";
+@import "./fonts/space-grotesk/SpaceGrotesk.css";
+@import "./fonts/jetbrains-mono/JetBrainsMono.css";
 
 /* ─── Tailwind v4: кастомные токены ──────────────────── */
 @theme {
