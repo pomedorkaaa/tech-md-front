@@ -5,12 +5,13 @@ import { useAuth } from '../../contexts/AuthContext';
 
 export default function RegisterForm() {
   const [formData, setFormData] = useState({
-    accountType: 'candidate' as 'candidate' | 'employer' | 'admin',
-    name: '',
+    accountType: 'candidate' as 'candidate' | 'employer',
+    username: '',
     email: '',
     password: '',
     password_confirm: ''
   });
+  const [error, setError] = useState('');
 
   const { register } = useAuth();
   const navigate = useNavigate();
@@ -18,31 +19,32 @@ export default function RegisterForm() {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
+    setError('');
   };
 
-  const handleAccountTypeChange = (type: 'candidate' | 'employer' | 'admin') => {
+  const handleAccountTypeChange = (type: 'candidate' | 'employer') => {
     setFormData(prev => ({ ...prev, accountType: type }));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError('');
+
     if (formData.password !== formData.password_confirm) {
-      alert("Пароли не совпадают!");
+      setError('Passwords do not match');
+      return;
+    }
+
+    if (formData.password.length < 6) {
+      setError('Password must be at least 6 characters');
       return;
     }
     
     try {
-      await register(formData.name, formData.email, formData.password, formData.accountType);
-      
-      if (formData.accountType === 'admin') {
-         navigate('/admin');
-      } else if (formData.accountType === 'employer') {
-         navigate('/employer');
-      } else {
-         navigate('/dashboard');
-      }
-    } catch (error) {
-      console.error('Ошибка регистрации', error);
+      await register(formData.username, formData.email, formData.password, formData.accountType);
+      navigate('/');
+    } catch (err: any) {
+      setError(err?.message || 'Registration failed');
     }
   };
 
@@ -54,6 +56,12 @@ export default function RegisterForm() {
         </h2>
 
         <form className="space-y-6" onSubmit={handleSubmit}>
+          {error && (
+            <div className="bg-red-500/10 border border-red-500/30 rounded-lg p-3 text-red-400 text-sm">
+              {error}
+            </div>
+          )}
+
           {/* Role Selection (Bento-style chips) */}
           <div className="space-y-3">
             <label className="font-sans text-[10px] font-bold uppercase tracking-[0.2em] text-text-muted ml-1">
@@ -93,18 +101,18 @@ export default function RegisterForm() {
             <div className="group border-t border-border mt-6 pt-6">
               <label
                 className="font-sans text-[10px] font-bold uppercase tracking-[0.2em] text-text-muted ml-1 block mb-2"
-                htmlFor="name"
+                htmlFor="username"
               >
-                Полное имя
+                Username
               </label>
               <div className="relative">
                 <input
                   className="w-full bg-charcoal-light border border-border rounded-lg py-4 pl-4 pr-12 text-text-primary placeholder:text-text-muted/40 focus:ring-2 focus:ring-primary/40 focus:border-transparent outline-none font-sans text-sm transition-all"
-                  id="name"
-                  name="name"
-                  placeholder="Иван Иванов"
+                  id="username"
+                  name="username"
+                  placeholder="your_username"
                   type="text"
-                  value={formData.name}
+                  value={formData.username}
                   onChange={handleChange}
                 />
                 <BadgeCheck
