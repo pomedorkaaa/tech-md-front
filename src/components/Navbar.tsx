@@ -39,8 +39,6 @@ export default function Navbar() {
     navigate('/login');
   };
 
-  const initials = user?.name?.charAt(0)?.toUpperCase() || '?';
-
   // Ссылки для авторизованного dropdown
   const userMenuLinks = [
     { label: 'Профиль', path: '/profile', icon: User },
