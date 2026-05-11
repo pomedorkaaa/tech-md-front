@@ -166,3 +166,47 @@ export async function getTechStackStats() {
   await delay(100);
   return techStackStats;
 }
+
+// ─── Авторизация ─────────────────────────────────────────
+export interface AuthResponse {
+  token: string;
+  user: {
+    id: number;
+    username: string;
+    email: string;
+    role: string;
+    registeredOn: string;
+    profile: {
+      title?: string;
+      location?: string;
+      avatar?: string;
+      codingScore?: number;
+      solvedTasks?: number;
+      rank?: string;
+      verified?: boolean;
+    };
+  };
+}
+
+export async function loginApi(username: string, password: string): Promise<AuthResponse> {
+  return fetchApi<AuthResponse>('/user/login', {
+    method: 'POST',
+    body: JSON.stringify({ username, password }),
+  });
+}
+
+export async function registerApi(
+  username: string,
+  email: string,
+  password: string,
+  role: string
+): Promise<AuthResponse> {
+  return fetchApi<AuthResponse>('/user/register', {
+    method: 'POST',
+    body: JSON.stringify({ username, email, password, role }),
+  });
+}
+
+export async function getMeApi(): Promise<AuthResponse['user']> {
+  return fetchApi<AuthResponse['user']>('/user/me');
+}
