@@ -23,20 +23,44 @@ const { activityLogs, techStackStats } = adminData as { activityLogs: ActivityLo
 const { conversations } = chatData as { conversations: Conversation[] };
 const { tasks } = sandboxData as { tasks: Task[] };
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5041/api';
 const USE_MOCKS = import.meta.env.VITE_USE_MOCKS !== 'false'; // По умолчанию true, пока нет бэкенда
+
+const TOKEN_KEY = 'techmoldova-auth-token';
 
 // Симуляция задержки сети для моков
 const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
+export function getStoredToken(): string | null {
+  return localStorage.getItem(TOKEN_KEY);
+}
+
+export function setStoredToken(token: string): void {
+  localStorage.setItem(TOKEN_KEY, token);
+}
+
+export function clearStoredToken(): void {
+  localStorage.removeItem(TOKEN_KEY);
+}
+
 async function fetchApi<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
+  const token = getStoredToken();
   const response = await fetch(`${API_URL}${endpoint}`, {
     ...options,
     headers: {
       'Content-Type': 'application/json',
+      ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
       ...options.headers,
     },
   });
+
+  if (response.status === 401) {
+    clearStoredToken();
+    localStorage.removeItem('techmoldova-auth-user');
+    window.location.href = '/login';
+    throw new Error('Unauthorized');
+  }
+
   if (!response.ok) {
     throw new Error(`API Error: ${response.statusText}`);
   }
