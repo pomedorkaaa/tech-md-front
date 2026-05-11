@@ -1,100 +1,90 @@
 import { createContext, useContext, useState, useEffect, type ReactNode } from 'react';
 import type { User } from '../types';
+import { loginApi, registerApi, getMeApi, setStoredToken, clearStoredToken, getStoredToken } from '../services/api';
 
 interface AuthContextType {
   user: User | null;
   isAuthenticated: boolean;
-  login: (email: string, password: string) => Promise<void>;
-  register: (name: string, email: string, password: string, role: 'candidate' | 'employer' | 'admin') => Promise<void>;
+  isLoading: boolean;
+  login: (username: string, password: string) => Promise<void>;
+  register: (username: string, email: string, password: string, role: 'candidate' | 'employer') => Promise<void>;
   logout: () => void;
   updateUser: (updates: Partial<User>) => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-const STORAGE_KEY = 'techmoldova-auth-user';
+const USER_KEY = 'techmoldova-auth-user';
 
-// Mock-пользователь для демонстрации
-const mockCandidateUser: User = {
-  id: 'u-1',
-  name: 'Иван Петров',
-  email: 'ivan@techmoldova.md',
-  role: 'candidate',
-  title: 'Senior Frontend Developer',
-  location: 'Кишинёв, Молдова',
-  codingScore: 847,
-  solvedTasks: 42,
-  rank: 'Gold',
-  verified: true,
-};
-
-const mockEmployerUser: User = {
-  id: 'u-2',
-  name: 'Елена Руссу',
-  email: 'elena@techflow.md',
-  role: 'employer',
-  title: 'HR Manager',
-  location: 'Кишинёв, Молдова',
-  verified: true,
-};
-
-const mockAdminUser: User = {
-  id: 'u-3',
-  name: 'Admin',
-  email: 'admin@techmoldova.md',
-  role: 'admin',
-  title: 'System Administrator',
-  location: 'Кишинёв, Молдова',
-  verified: true,
-};
+function mapBackendUser(backendUser: any): User {
+  return {
+    id: String(backendUser.id),
+    name: backendUser.username,
+    email: backendUser.email,
+    role: backendUser.role.toLowerCase() as 'candidate' | 'employer' | 'admin',
+    title: backendUser.profile?.title,
+    location: backendUser.profile?.location,
+    avatar: backendUser.profile?.avatar,
+    codingScore: backendUser.profile?.codingScore,
+    solvedTasks: backendUser.profile?.solvedTasks,
+    rank: backendUser.profile?.rank,
+    verified: backendUser.profile?.verified,
+  };
+}
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(() => {
     try {
-      const saved = localStorage.getItem(STORAGE_KEY);
+      const saved = localStorage.getItem(USER_KEY);
       return saved ? JSON.parse(saved) : null;
     } catch {
       return null;
     }
   });
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     if (user) {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(user));
+      localStorage.setItem(USER_KEY, JSON.stringify(user));
     } else {
-      localStorage.removeItem(STORAGE_KEY);
+      localStorage.removeItem(USER_KEY);
     }
   }, [user]);
 
-  const login = async (email: string, _password: string) => {
-    // Mock: определяем роль по email
-    await new Promise(resolve => setTimeout(resolve, 300));
-    if (email.includes('admin')) {
-      setUser(mockAdminUser);
-    } else if (email.includes('employer') || email.includes('techflow')) {
-      setUser(mockEmployerUser);
-    } else {
-      setUser(mockCandidateUser);
+  // On mount: if token exists, validate it via /me
+  useEffect(() => {
+    const token = getStoredToken();
+    if (!token) {
+      setIsLoading(false);
+      return;
     }
+
+    getMeApi()
+      .then((backendUser) => {
+        setUser(mapBackendUser(backendUser));
+      })
+      .catch(() => {
+        clearStoredToken();
+        setUser(null);
+      })
+      .finally(() => setIsLoading(false));
+  }, []);
+
+  const login = async (username: string, password: string) => {
+    const response = await loginApi(username, password);
+    setStoredToken(response.token);
+    setUser(mapBackendUser(response.user));
   };
 
-  const register = async (name: string, email: string, _password: string, role: 'candidate' | 'employer' | 'admin') => {
-    await new Promise(resolve => setTimeout(resolve, 300));
-    const newUser: User = {
-      id: `u-${Date.now()}`,
-      name,
-      email,
-      role,
-      title: role === 'candidate' ? 'Junior Developer' : role === 'employer' ? 'Recruiter' : 'Admin',
-      location: 'Молдова',
-      codingScore: 0,
-      solvedTasks: 0,
-      verified: false,
-    };
-    setUser(newUser);
+  const register = async (username: string, email: string, password: string, role: 'candidate' | 'employer') => {
+    const roleCapitalized = role.charAt(0).toUpperCase() + role.slice(1);
+    const response = await registerApi(username, email, password, roleCapitalized);
+    setStoredToken(response.token);
+    setUser(mapBackendUser(response.user));
   };
 
   const logout = () => {
+    clearStoredToken();
     setUser(null);
   };
 
@@ -103,7 +93,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   return (
-    <AuthContext.Provider value={{ user, isAuthenticated: !!user, login, register, logout, updateUser }}>
+    <AuthContext.Provider value={{ user, isAuthenticated: !!user, isLoading, login, register, logout, updateUser }}>
       {children}
     </AuthContext.Provider>
   );
@@ -111,6 +101,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
 export function useAuth() {
   const context = useContext(AuthContext);
-  if (!context) throw new Error('useAuth должен использоваться внутри AuthProvider');
+  if (!context) throw new Error('useAuth must be used inside AuthProvider');
   return context;
 }

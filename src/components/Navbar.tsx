@@ -19,6 +19,8 @@ export default function Navbar() {
   const { user, isAuthenticated, logout } = useAuth();
   const dropdownRef = useRef<HTMLDivElement>(null);
 
+  const initials = user?.name?.charAt(0)?.toUpperCase() || '?';
+
   // Закрытие dropdown по клику вне
   useEffect(() => {
     const handler = (e: MouseEvent) => {
@@ -34,10 +36,8 @@ export default function Navbar() {
     logout();
     setDropdownOpen(false);
     setMobileOpen(false);
-    navigate('/');
+    navigate('/login');
   };
-
-  const initials = user?.name?.split(' ').map(n => n[0]).join('') || '?';
 
   // Ссылки для авторизованного dropdown
   const userMenuLinks = [
