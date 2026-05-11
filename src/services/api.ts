@@ -43,7 +43,7 @@ export function clearStoredToken(): void {
   localStorage.removeItem(TOKEN_KEY);
 }
 
-async function fetchApi<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
+async function fetchApi<T>(endpoint: string, options: RequestInit = {}, skipAuthRedirect = false): Promise<T> {
   const token = getStoredToken();
   const response = await fetch(`${API_URL}${endpoint}`, {
     ...options,
@@ -57,7 +57,9 @@ async function fetchApi<T>(endpoint: string, options: RequestInit = {}): Promise
   if (response.status === 401) {
     clearStoredToken();
     localStorage.removeItem('techmoldova-auth-user');
-    window.location.href = '/login';
+    if (!skipAuthRedirect) {
+      window.location.href = '/login';
+    }
     throw new Error('Unauthorized');
   }
 
@@ -213,5 +215,5 @@ export async function registerApi(
 }
 
 export async function getMeApi(): Promise<AuthResponse['user']> {
-  return fetchApi<AuthResponse['user']>('/user/me');
+  return fetchApi<AuthResponse['user']>('/user/me', {}, true);
 }
