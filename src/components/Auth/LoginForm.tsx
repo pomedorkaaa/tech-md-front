@@ -4,54 +4,55 @@ import { useAuth } from '../../contexts/AuthContext';
 
 export default function LoginForm() {
   const [formData, setFormData] = useState({
-    email: '',
+    username: '',
     password: ''
   });
+  const [error, setError] = useState('');
   const { login } = useAuth();
   const navigate = useNavigate();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
+    setError('');
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError('');
     try {
-      await login(formData.email, formData.password);
-      
-      // Перенаправляем на дашборд в зависимости от роли (пока просто на профиль)
-      if (formData.email.includes('admin')) {
-         navigate('/admin');
-      } else if (formData.email.includes('employer') || formData.email.includes('techflow')) {
-         navigate('/employer');
-      } else {
-         navigate('/dashboard');
-      }
-    } catch (error) {
-      console.error('Ошибка входа', error);
+      await login(formData.username, formData.password);
+      navigate('/');
+    } catch (err: any) {
+      setError(err?.message || 'Invalid username or password');
     }
   };
 
   return (
     <div className="bg-charcoal rounded-xl shadow-2xl p-8 md:p-10 border border-border relative overflow-hidden">
       <form className="space-y-6 relative z-10" onSubmit={handleSubmit}>
-        {/* Email Field */}
+        {error && (
+          <div className="bg-red-500/10 border border-red-500/30 rounded-lg p-3 text-red-400 text-sm">
+            {error}
+          </div>
+        )}
+
+        {/* Username Field */}
         <div className="space-y-2">
           <label
             className="block font-sans text-xs font-bold uppercase tracking-widest text-text-secondary"
-            htmlFor="email"
+            htmlFor="username"
           >
-            Email/Login
+            Username
           </label>
           <div className="relative">
             <input
               className="w-full bg-charcoal-light border border-border rounded-lg py-3 px-4 text-text-primary placeholder:text-text-muted focus:ring-2 focus:ring-primary/50 transition-all outline-none"
-              id="email"
-              name="email"
-              placeholder="name@company.md"
+              id="username"
+              name="username"
+              placeholder="your_username"
               type="text"
-              value={formData.email}
+              value={formData.username}
               onChange={handleChange}
             />
           </div>
