@@ -1,4 +1,5 @@
 import { MapPin, Users, Building2, Globe, ExternalLink } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import type { Job } from '../../types';
 
@@ -11,7 +12,11 @@ export default function CompanyInfoCard({ company }: CompanyInfoCardProps) {
 
   return (
     <div className="gradient-card rounded-xl p-6 border border-border">
-      <h3 className="text-lg font-bold text-text-primary mb-4">{company.name}</h3>
+      <h3 className="text-lg font-bold text-text-primary mb-4">
+        <Link to={`/companies/${company.id}`} className="hover:text-primary transition-colors">
+          {company.name}
+        </Link>
+      </h3>
       <p className="text-sm text-text-secondary mb-4">{company.description}</p>
       <div className="space-y-3 text-sm">
         <div className="flex items-center gap-2 text-text-muted">
