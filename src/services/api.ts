@@ -1,35 +1,8 @@
-/**
- * Сервисный слой TechMoldova
- * 
- * API-подобные функции, которые пока возвращают моковые данные.
- * При подключении .NET бэкенда достаточно будет заменить реализацию
- * в этих функциях на реальные HTTP-запросы.
- */
-import jobsData from '../pages/Jobs/JobsMockData.json';
-import companiesData from '../pages/Companies/CompaniesMockData.json';
-import candidateData from '../pages/CandidateDashboard/CandidateMockData.json';
-import employerData from '../pages/EmployerDashboard/EmployerMockData.json';
-import adminData from '../pages/AdminDashboard/AdminMockData.json';
-import chatData from '../pages/Chat/ChatMockData.json';
-import sandboxData from '../pages/Sandbox/SandboxMockData.json';
-
-import type { Job, Company, Task, User, Application, SavedSnippet, TestResult, ActivityLog, Conversation } from '../types';
-
-const { jobs } = jobsData as { jobs: Job[] };
-const { companies } = companiesData as { companies: Company[] };
-const { currentUser, applications, savedSnippets } = candidateData as unknown as { currentUser: User, applications: Application[], savedSnippets: SavedSnippet[] };
-const { testResults } = employerData as { testResults: TestResult[] };
-const { activityLogs, techStackStats } = adminData as { activityLogs: ActivityLog[], techStackStats: { name: string, percentage: number }[] };
-const { conversations } = chatData as { conversations: Conversation[] };
-const { tasks } = sandboxData as { tasks: Task[] };
+import type { Job, Company, Task, Application, SavedSnippet, TestResult, ActivityLog, Conversation } from '../types';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5041/api';
-const USE_MOCKS = import.meta.env.VITE_USE_MOCKS !== 'false'; // По умолчанию true, пока нет бэкенда
 
 const TOKEN_KEY = 'techmoldova-auth-token';
-
-// Симуляция задержки сети для моков
-const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
 export function getStoredToken(): string | null {
   return localStorage.getItem(TOKEN_KEY);
@@ -68,7 +41,7 @@ export async function fetchApi<T>(endpoint: string, options: RequestInit = {}, s
     try {
       const body = await response.json();
       errorMessage = body.Message || body.message || body.Detail || errorMessage;
-    } catch { /* ignore parse errors */ }
+    } catch { }
     throw new Error(errorMessage);
   }
   return response.json();
@@ -76,102 +49,120 @@ export async function fetchApi<T>(endpoint: string, options: RequestInit = {}, s
 
 // ─── Вакансии ────────────────────────────────────────────
 export async function getJobs(): Promise<Job[]> {
-  if (USE_MOCKS) {
-    await delay(100);
-    return jobs;
-  }
-  return fetchApi<Job[]>('/jobs');
+  return fetchApi<Job[]>('/job/all');
 }
 
 export async function getJobById(id: string): Promise<Job | undefined> {
-  if (USE_MOCKS) {
-    await delay(100);
-    return jobs.find(job => job.id === id);
-  }
-  return fetchApi<Job>(`/jobs/${id}`);
+  return fetchApi<Job>(`/job/${id}`);
 }
 
 export async function searchJobs(query: string): Promise<Job[]> {
-  await delay(100);
-  const lower = query.toLowerCase();
-  return jobs.filter(job =>
-    job.title.toLowerCase().includes(lower) ||
-    job.company.name.toLowerCase().includes(lower) ||
-    job.techStack.some(t => t.toLowerCase().includes(lower))
-  );
+  return fetchApi<Job[]>(`/job/search?q=${encodeURIComponent(query)}`);
+}
+
+export async function createJob(data: any): Promise<Job> {
+  return fetchApi<Job>('/job', { method: 'POST', body: JSON.stringify(data) });
 }
 
 // ─── Компании ────────────────────────────────────────────
 export async function getCompanies(): Promise<Company[]> {
-  await delay(100);
-  return companies;
+  return fetchApi<Company[]>('/company/all');
 }
 
 export async function getCompanyById(id: string): Promise<Company | undefined> {
-  await delay(100);
-  return companies.find(c => c.id === id);
+  return fetchApi<Company>(`/company/${id}`);
+}
+
+export async function createCompany(data: any): Promise<Company> {
+  return fetchApi<Company>('/company', { method: 'POST', body: JSON.stringify(data) });
 }
 
 // ─── Задачи ──────────────────────────────────────────────
 export async function getTasks(): Promise<Task[]> {
-  await delay(100);
-  return tasks;
+  return fetchApi<Task[]>('/task/all');
 }
 
 export async function getTaskById(id: string): Promise<Task | undefined> {
-  await delay(100);
-  return tasks.find(t => t.id === id);
+  return fetchApi<Task>(`/task/${id}`);
 }
 
-// ─── Пользователь ────────────────────────────────────────
-export async function getCurrentUser(): Promise<User> {
-  await delay(100);
-  return currentUser;
+export async function createTask(data: any): Promise<Task> {
+  return fetchApi<Task>('/task', { method: 'POST', body: JSON.stringify(data) });
 }
 
-// ─── Отклики (Кандидат) ──────────────────────────────────
-export async function getApplications() {
-  await delay(100);
-  return applications;
+// ─── Отклики ─────────────────────────────────────────────
+export async function getApplications(userId: string): Promise<Application[]> {
+  return fetchApi<Application[]>(`/application/user/${userId}`);
 }
 
-// ─── Сохранённое (Кандидат) ──────────────────────────────
-export async function getSavedSnippets() {
-  await delay(100);
-  return savedSnippets;
+export async function createApplication(data: any): Promise<Application> {
+  return fetchApi<Application>('/application', { method: 'POST', body: JSON.stringify(data) });
 }
 
-// ─── Диалоги (Чат) ───────────────────────────────────────
-export async function getConversations() {
-  await delay(100);
-  return conversations;
+// ─── Сохранённые сниппеты ────────────────────────────────
+export async function getSavedSnippets(userId: string): Promise<SavedSnippet[]> {
+  return fetchApi<SavedSnippet[]>(`/snippet/user/${userId}`);
 }
 
-// ─── Результаты тестов (Работодатель) ────────────────────
-export async function getTestResults() {
-  await delay(100);
-  return testResults;
+export async function createSnippet(data: any): Promise<SavedSnippet> {
+  return fetchApi<SavedSnippet>('/snippet', { method: 'POST', body: JSON.stringify(data) });
+}
+
+// ─── Диалоги ─────────────────────────────────────────────
+export async function getConversations(userId: string): Promise<Conversation[]> {
+  return fetchApi<Conversation[]>(`/conversation/user/${userId}`);
+}
+
+export async function createConversation(data: any): Promise<Conversation> {
+  return fetchApi<Conversation>('/conversation', { method: 'POST', body: JSON.stringify(data) });
+}
+
+// ─── Сообщения ───────────────────────────────────────────
+export async function getMessages(conversationId: string) {
+  return fetchApi<any[]>(`/message/conversation/${conversationId}`);
+}
+
+export async function sendMessage(data: any) {
+  return fetchApi<any>('/message', { method: 'POST', body: JSON.stringify(data) });
+}
+
+// ─── Результаты тестов ───────────────────────────────────
+export async function getTestResults(): Promise<TestResult[]> {
+  return fetchApi<TestResult[]>('/testresult/all');
+}
+
+export async function getTestResultById(id: string): Promise<TestResult | undefined> {
+  return fetchApi<TestResult>(`/testresult/${id}`);
+}
+
+export async function createTestResult(data: any): Promise<TestResult> {
+  return fetchApi<TestResult>('/testresult', { method: 'POST', body: JSON.stringify(data) });
 }
 
 // ─── Админ-панель ────────────────────────────────────────
 export async function getAdminStats() {
-  await delay(100);
-  return {
-    totalUsers: 1248,
-    totalJobs: 856,
-    totalSolutions: 3400,
-    cpuLoad: 42,
-  };
+  return fetchApi<any>('/admin/statistics');
 }
 
-export async function getActivityLogs() {
-  await delay(100);
-  return activityLogs;
+export async function getActivityLogs(): Promise<ActivityLog[]> {
+  return fetchApi<ActivityLog[]>('/admin/activity-logs');
 }
 
-export async function getTechStackStats() {
-  await delay(100);
-  return techStackStats;
+export async function getAdminUsers() {
+  return fetchApi<any[]>('/admin/users');
+}
+
+export async function blockUser(userId: number) {
+  return fetchApi<void>(`/admin/users/${userId}/block`, { method: 'POST' });
+}
+
+// ─── Уведомления ─────────────────────────────────────────
+export async function getNotifications() {
+  return fetchApi<{ id: number; title: string; message: string; isRead: boolean; createdAt: string }[]>('/notifications');
+}
+
+export async function markNotificationRead(id: number) {
+  return fetchApi<void>(`/notifications/${id}/read`, { method: 'POST' });
 }
 
 // ─── Авторизация ─────────────────────────────────────────
@@ -218,11 +209,10 @@ export async function getMeApi(): Promise<AuthResponse['user']> {
   return fetchApi<AuthResponse['user']>('/user/me', {}, true);
 }
 
-// ─── Уведомления ─────────────────────────────────────────
-export async function getNotifications() {
-  return fetchApi<{ id: number; title: string; message: string; isRead: boolean; createdAt: string }[]>('/notifications');
+export async function updateProfile(userId: string, data: any) {
+  return fetchApi<any>(`/user/${userId}`, { method: 'PUT', body: JSON.stringify(data) });
 }
 
-export async function markNotificationRead(id: number) {
-  return fetchApi<void>(`/notifications/${id}/read`, { method: 'POST' });
+export async function changePassword(data: { currentPassword: string; newPassword: string }) {
+  return fetchApi<any>('/user/change-password', { method: 'POST', body: JSON.stringify(data) });
 }

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { getCurrentUser } from '../../services/api';
+import { useAuth } from '../../contexts/AuthContext';
 import type { User as UserType } from '../../types';
 import { UserProfileHeader } from '../../components/UserProfile/UserProfileHeader';
 import { UserExperience } from '../../components/UserProfile/UserExperience';
@@ -13,6 +13,7 @@ import { Bookmark } from 'lucide-react';
 
 export default function UserProfilePage() {
   const { t } = useTranslation();
+  const { user } = useAuth();
   const { savedJobIds } = useFavorites();
   const [activeTab, setActiveTab] = useState<'profile' | 'favorites'>('profile');
   const [profile, setProfile] = useState<UserType | null>(null);
@@ -25,7 +26,7 @@ export default function UserProfilePage() {
   });
 
   useEffect(() => {
-    getCurrentUser().then(user => {
+    if (user) {
       setProfile(user);
       setFormData({
         name: user.name,
@@ -33,8 +34,8 @@ export default function UserProfilePage() {
         title: user.title || '',
         location: user.location || '',
       });
-    });
-  }, []);
+    }
+  }, [user]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });

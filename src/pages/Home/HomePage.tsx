@@ -1,5 +1,6 @@
 import { useMockData } from '../../hooks/useMockData';
-import type { Job, Company, Task } from '../../types';
+import { useSandboxTasks } from '../../hooks/useSandboxTasks';
+import type { Job, Company } from '../../types';
 import HeroSection from '../../components/Home/HeroSection';
 import PremiumJobsList from '../../components/Home/PremiumJobsList';
 import DailyChallengeWidget from '../../components/Home/DailyChallengeWidget';
@@ -8,11 +9,10 @@ import TopCompaniesWidget from '../../components/Home/TopCompaniesWidget';
 
 export default function HomePage() {
   const homeData = useMockData<{ jobs: Job[], companies: Company[] }>('HomeMockData.json', { jobs: [], companies: [] });
-  const sandboxData = useMockData<{ tasks: Task[] }>('SandboxMockData.json', { tasks: [] });
-  
+  const tasks = useSandboxTasks();
+
   const jobs = homeData.jobs || [];
   const companies = homeData.companies || [];
-  const tasks = sandboxData.tasks || [];
   
   const featuredJobs = jobs.slice(0, 4);
 
