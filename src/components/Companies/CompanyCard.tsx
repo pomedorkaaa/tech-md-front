@@ -17,12 +17,12 @@ export default function CompanyCard({ company }: CompanyCardProps) {
           {company.logo}
         </div>
         <div className="flex-1 min-w-0">
-          <h3 className="font-bold text-lg text-text-primary group-hover:text-primary transition-colors truncate">
+          <Link to={`/companies/${company.id}`} className="font-bold text-lg text-text-primary group-hover:text-primary transition-colors truncate block">
             {company.name}
-          </h3>
+          </Link>
           <p className="text-xs text-text-muted flex items-center gap-1 mt-1">
             <MapPin size={12} />
-            Кишинёв, Молдова
+            {company.location || 'Кишинёв, Молдова'}
           </p>
         </div>
       </div>
