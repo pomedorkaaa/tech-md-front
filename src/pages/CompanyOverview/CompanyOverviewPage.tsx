@@ -1,7 +1,8 @@
+import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import type { Company, Job } from '../../types';
-import { useMockData } from '../../hooks/useMockData';
+import { getCompanyById, getJobs } from '../../services/api';
 import CompanyHeader from '../../components/CompanyOverview/CompanyHeader';
 import CompanyJobsList from '../../components/CompanyOverview/CompanyJobsList';
 import CompanyDetailsWidget from '../../components/CompanyOverview/CompanyDetailsWidget';
@@ -9,17 +10,27 @@ import CompanyDetailsWidget from '../../components/CompanyOverview/CompanyDetail
 export default function CompanyOverviewPage() {
   const { id } = useParams();
   const { t } = useTranslation();
-  
-  // Загружаем локализованные данные
-  const { companies } = useMockData<{companies: Company[]}>('CompaniesMockData.json', { companies: [] });
-  const { jobs } = useMockData<{jobs: Job[]}>('JobsMockData.json', { jobs: [] });
-  
-  // Ищем компанию в общем списке моковых данных
-  const companyItem = companies.find((c: Company) => c.id === id);
-  // Находим все вакансии этой компании
-  const companyJobs = jobs.filter((j: Job) => String(j.company.id) === String(id) || j.company.name === companyItem?.name);
+  const [company, setCompany] = useState<Company | null>(null);
+  const [companyJobs, setCompanyJobs] = useState<Job[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  if (!companyItem) {
+  useEffect(() => {
+    if (!id) return;
+    Promise.all([
+      getCompanyById(id).catch(() => null),
+      getJobs().catch(() => [])
+    ]).then(([c, jobs]) => {
+      setCompany(c || null);
+      setCompanyJobs(jobs.filter(j => String(j.company.id) === String(id)));
+      setLoading(false);
+    });
+  }, [id]);
+
+  if (loading) {
+    return <div className="p-8 text-center text-text-muted">{t('profile.loading_profile') || 'Загрузка...'}</div>;
+  }
+
+  if (!company) {
     return (
       <div className="max-w-7xl mx-auto px-4 py-16 text-center">
         <h1 className="text-2xl font-bold text-text-primary mb-4">{t('jobs.not_found') || 'Компания не найдена'}</h1>
@@ -30,11 +41,11 @@ export default function CompanyOverviewPage() {
 
   return (
     <div className="max-w-7xl mx-auto space-y-6">
-      <CompanyHeader company={companyItem as any} />
+      <CompanyHeader company={company as any} />
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <CompanyJobsList jobs={companyJobs} />
-        <CompanyDetailsWidget company={companyItem as any} />
+        <CompanyDetailsWidget company={company as any} />
       </div>
     </div>
   );

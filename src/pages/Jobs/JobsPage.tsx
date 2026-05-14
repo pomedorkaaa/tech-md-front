@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { useMockData } from '../../hooks/useMockData';
+import { getJobs } from '../../services/api';
 import type { Job } from '../../types';
 
 import JobSearchHeader from '../../components/Jobs/JobSearchHeader';
@@ -13,8 +13,11 @@ const techFilters = ['React', 'Python', 'Java', 'Go', '.NET', 'Swift', 'TypeScri
 export default function JobsPage() {
   const [searchParams] = useSearchParams();
   const { t } = useTranslation();
-  const mockData = useMockData<{ jobs: Job[] }>('JobsMockData.json', { jobs: [] });
-  const jobs = mockData.jobs || [];
+  const [jobs, setJobs] = useState<Job[]>([]);
+
+  useEffect(() => {
+    getJobs().then(setJobs).catch(() => setJobs([]));
+  }, []);
 
   const experienceFilters = [t('jobs.any'), t('jobs.0_1_exp', '0-1 год'), t('jobs.1_3_exp'), t('jobs.3_5_exp', '3-5 лет'), t('jobs.5_exp', '5+ лет')];
 
