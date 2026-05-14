@@ -1,5 +1,7 @@
 import { Link } from 'react-router-dom';
-import { MapPin, Clock, Code, Flame } from 'lucide-react';
+import { MapPin, Clock, Code, Flame, Heart } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
+import { useFavorites } from '../../contexts/FavoritesContext';
 import type { Job } from '../../types';
 
 interface JobCardProps {
@@ -7,6 +9,15 @@ interface JobCardProps {
 }
 
 export default function JobCard({ job }: JobCardProps) {
+  const { t } = useTranslation();
+  const { isFavorite, toggleFavorite } = useFavorites();
+  const saved = isFavorite(job.id);
+
+  const handleFavoriteClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    toggleFavorite(job.id);
+  };
+
   return (
     <Link
       to={`/jobs/${job.id}`}
@@ -24,18 +35,26 @@ export default function JobCard({ job }: JobCardProps) {
               </h3>
               {job.isHot && (
                 <span className="flex items-center gap-1 px-2 py-0.5 text-xs rounded-full bg-error/10 text-error">
-                  <Flame size={10} /> Hot
+                  <Flame size={10} /> {t('job_card.hot')}
                 </span>
               )}
             </div>
             <p className="text-sm text-text-muted">{job.company.name}</p>
           </div>
         </div>
-        <div className="text-right shrink-0">
-          <p className="font-semibold text-text-primary">
-            {job.salary.currency}{job.salary.min}–{job.salary.max}
-          </p>
-          <p className="text-xs text-text-muted">/месяц</p>
+        <div className="flex flex-col items-end shrink-0 gap-2">
+          <div className="text-right">
+            <p className="font-semibold text-text-primary">
+              {job.salary.currency}{job.salary.min}–{job.salary.max}
+            </p>
+            <p className="text-xs text-text-muted">{t('job_card.per_month')}</p>
+          </div>
+          <button 
+            onClick={handleFavoriteClick}
+            className={`p-2 rounded-lg transition-colors ${saved ? 'text-primary bg-primary/10' : 'text-text-muted hover:text-text-primary hover:bg-surface-elevated'}`}
+          >
+            <Heart size={18} fill={saved ? 'currentColor' : 'none'} />
+          </button>
         </div>
       </div>
 
@@ -43,7 +62,7 @@ export default function JobCard({ job }: JobCardProps) {
         <span className="flex items-center gap-1"><MapPin size={12} /> {job.location}</span>
         <span className="flex items-center gap-1"><Clock size={12} /> {job.experience}</span>
         <span className="px-2 py-0.5 rounded-md bg-surface-elevated text-text-secondary">
-          {job.type === 'remote' ? 'Удалённо' : job.type === 'hybrid' ? 'Гибрид' : 'Офис'}
+          {job.type === 'remote' ? t('job_card.remote') : job.type === 'hybrid' ? t('job_card.hybrid') : t('job_card.office')}
         </span>
       </div>
 

@@ -1,19 +1,22 @@
 import { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import mockData from './JobsMockData.json';
+import { useTranslation } from 'react-i18next';
+import { useMockData } from '../../hooks/useMockData';
 import type { Job } from '../../types';
 
 import JobSearchHeader from '../../components/Jobs/JobSearchHeader';
 import JobsFiltersSidebar from '../../components/Jobs/JobsFiltersSidebar';
 import JobCard from '../../components/Jobs/JobCard';
 
-const { jobs } = mockData as { jobs: Job[] };
-
-const experienceFilters = ['Любой', '0-1 год', '1-3 года', '3-5 лет', '5+ лет'];
 const techFilters = ['React', 'Python', 'Java', 'Go', '.NET', 'Swift', 'TypeScript'];
 
 export default function JobsPage() {
   const [searchParams] = useSearchParams();
+  const { t } = useTranslation();
+  const mockData = useMockData<{ jobs: Job[] }>('JobsMockData.json', { jobs: [] });
+  const jobs = mockData.jobs || [];
+
+  const experienceFilters = [t('jobs.any'), t('jobs.0_1_exp', '0-1 год'), t('jobs.1_3_exp'), t('jobs.3_5_exp', '3-5 лет'), t('jobs.5_exp', '5+ лет')];
 
   const [filterState, setFilterState] = useState({
     searchQuery: '',
@@ -125,8 +128,7 @@ export default function JobsPage() {
         <div className="flex-1 space-y-4">
           {filteredJobs.length === 0 ? (
             <div className="text-center py-16 text-text-muted">
-              <p className="text-lg font-semibold mb-1">Вакансии не найдены</p>
-              <p className="text-sm">Попробуйте изменить параметры поиска или фильтры</p>
+              <p className="text-lg font-semibold mb-1">{t('jobs.no_results')}</p>
             </div>
           ) : (
             filteredJobs.map(job => (

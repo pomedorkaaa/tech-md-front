@@ -1,3 +1,5 @@
+import { useTranslation } from 'react-i18next';
+
 interface JobsFiltersSidebarProps {
   selectedExperience: string;
   onExperienceChange: (exp: string) => void;
@@ -27,29 +29,30 @@ export default function JobsFiltersSidebar({
   onSalaryMaxChange,
   onSalaryCurrencyChange,
 }: JobsFiltersSidebarProps) {
+  const { t } = useTranslation();
   return (
     <aside className="w-full lg:w-64 shrink-0 space-y-6">
       {/* Зарплата */}
       <div className="gradient-card rounded-xl p-5 border border-border">
-        <h3 className="text-sm font-semibold text-text-primary mb-3">Зарплата</h3>
+        <h3 className="text-sm font-semibold text-text-primary mb-3">{t('jobs.salary')}</h3>
         <div className="flex gap-2 mb-3">
           <input
             type="number"
-            placeholder="От"
+            placeholder={t('jobs.salary_from')}
             value={salaryMin}
             onChange={(e) => onSalaryMinChange(e.target.value)}
             className="w-full bg-surface-elevated border border-border rounded-lg px-3 py-2 text-sm text-text-primary placeholder:text-text-muted outline-none focus:border-primary/50 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
           />
           <input
             type="number"
-            placeholder="До"
+            placeholder={t('jobs.salary_to')}
             value={salaryMax}
             onChange={(e) => onSalaryMaxChange(e.target.value)}
             className="w-full bg-surface-elevated border border-border rounded-lg px-3 py-2 text-sm text-text-primary placeholder:text-text-muted outline-none focus:border-primary/50 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
           />
         </div>
         <div>
-          <label className="text-xs text-text-muted mb-1.5 block">Валюта</label>
+          <label className="text-xs text-text-muted mb-1.5 block">{t('jobs.salary_currency')}</label>
           <select
             value={salaryCurrency}
             onChange={(e) => onSalaryCurrencyChange(e.target.value)}
@@ -64,7 +67,7 @@ export default function JobsFiltersSidebar({
 
       {/* Опыт работы */}
       <div className="gradient-card rounded-xl p-5 border border-border">
-        <h3 className="text-sm font-semibold text-text-primary mb-3">Опыт работы</h3>
+        <h3 className="text-sm font-semibold text-text-primary mb-3">{t('jobs.experience')}</h3>
         <div className="space-y-2">
           {experienceFilters.map(exp => (
             <label
@@ -93,7 +96,7 @@ export default function JobsFiltersSidebar({
 
       {/* Технологии */}
       <div className="gradient-card rounded-xl p-5 border border-border">
-        <h3 className="text-sm font-semibold text-text-primary mb-3">Технологии</h3>
+        <h3 className="text-sm font-semibold text-text-primary mb-3">{t('jobs.technologies')}</h3>
         <div className="flex flex-wrap gap-2">
           {techFilters.map(tech => (
             <button

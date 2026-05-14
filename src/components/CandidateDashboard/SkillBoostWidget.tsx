@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import { TrendingUp } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import type { Task } from '../../types';
 
 interface SkillBoostWidgetProps {
@@ -7,16 +8,18 @@ interface SkillBoostWidgetProps {
 }
 
 export default function SkillBoostWidget({ task }: SkillBoostWidgetProps) {
+  const { t } = useTranslation();
+
   if (!task) return null;
 
   return (
     <div className="gradient-card rounded-xl p-6 border border-primary/20">
       <div className="flex items-center gap-2 mb-3">
         <TrendingUp size={18} className="text-primary" />
-        <h2 className="text-lg font-bold text-text-primary">Прокачайте навыки</h2>
+        <h2 className="text-lg font-bold text-text-primary">{t('dashboard.skill_boost')}</h2>
       </div>
       <p className="text-sm text-text-secondary mb-4">
-        Ваш рейтинг растет! Решите задачу уровня Hard для получения бейджа "Алгоритмист".
+        {t('dashboard.skill_boost_desc')}
       </p>
       <Link to={`/sandbox?task=${task.id}`} className="block p-4 rounded-xl bg-surface-elevated hover:bg-surface-overlay transition-colors group">
         <div className="flex items-center justify-between">

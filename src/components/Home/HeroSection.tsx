@@ -1,7 +1,9 @@
 import { Link } from 'react-router-dom';
 import { Search, Code } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 export default function HeroSection() {
+  const { t } = useTranslation();
   return (
     <section className="relative">
       <div className="flex flex-col lg:flex-row items-center gap-10 py-8">
@@ -12,15 +14,15 @@ export default function HeroSection() {
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
                 <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-primary"></span>
               </span>
-              452 новых вакансии в Кишиневе
+              452 {t('home.hero_new_jobs')}
             </div>
 
             <h1 className="text-4xl sm:text-5xl lg:text-[52px] font-black tracking-tight text-text-primary leading-tight">
-              Твоя IT карьера <br /><span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-blue-400">в Молдове</span>
+              {t('home.hero_title')} <br /><span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-blue-400">{t('home.hero_title_highlight')}</span>
             </h1>
 
             <p className="text-base text-text-secondary max-w-xl mx-auto lg:mx-0 leading-relaxed">
-              Первая гибридная платформа: находи работу и проходи технические интервью на одной площадке. От джуна до лида в лучших компаниях страны.
+              {t('home.hero_desc')}
             </p>
           </div>
 
@@ -31,19 +33,19 @@ export default function HeroSection() {
               </div>
               <input 
                 type="text" 
-                placeholder="Должность, навык или компания..." 
+                placeholder={t('home.search_placeholder')} 
                 className="block w-full pl-12 pr-32 py-4 rounded-xl border border-border bg-charcoal text-text-primary shadow-xl focus:ring-2 focus:ring-primary focus:border-transparent placeholder-text-muted transition-all outline-none text-sm" 
               />
               <div className="absolute inset-y-1.5 right-1.5 flex items-center">
                 <button type="submit" className="bg-primary hover:bg-primary-dark text-white px-6 h-full rounded-lg text-sm font-bold transition-all shadow-md shadow-primary/20">
-                  Поиск
+                  {t('home.search_button')}
                 </button>
               </div>
             </form>
 
             <div className="mt-4 overflow-x-auto pb-2 scrollbar-hide">
               <div className="flex flex-wrap lg:w-auto items-center gap-x-4 gap-y-1.5 text-[10px] font-bold uppercase tracking-widest text-text-muted">
-                <span className="text-primary/60">Топ категории:</span>
+                <span className="text-primary/60">{t('home.top_categories')}</span>
                 {['Frontend', 'Python', 'QA Automation', 'DevOps'].map(tag => (
                   <Link
                     key={tag}

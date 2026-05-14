@@ -1,4 +1,5 @@
 import { Search, SlidersHorizontal } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 interface JobSearchHeaderProps {
   totalJobs: number;
@@ -15,15 +16,13 @@ export default function JobSearchHeader({
   showFilters,
   onToggleFilters
 }: JobSearchHeaderProps) {
+  const { t } = useTranslation();
   return (
     <>
       <div className="mb-6">
         <h1 className="text-3xl font-bold text-text-primary">
-          Найдено {totalJobs} вакансий
+          {t('jobs.found_jobs', { count: totalJobs })}
         </h1>
-        <p className="text-sm text-text-muted mt-1">
-          Результаты поиска для Python, Frontend, Backend разработчиков
-        </p>
       </div>
 
       <div className="flex gap-3 mb-6">
@@ -33,7 +32,7 @@ export default function JobSearchHeader({
             type="text"
             value={searchQuery}
             onChange={(e) => onSearchChange(e.target.value)}
-            placeholder="Должность, компания или технология..."
+            placeholder={t('jobs.search_placeholder')}
             className="flex-1 bg-transparent px-3 py-3 text-text-primary placeholder:text-text-muted outline-none text-sm"
           />
         </div>
@@ -46,7 +45,7 @@ export default function JobSearchHeader({
             }`}
         >
           <SlidersHorizontal size={16} />
-          Фильтры
+          {t('jobs.filters')}
         </button>
       </div>
     </>

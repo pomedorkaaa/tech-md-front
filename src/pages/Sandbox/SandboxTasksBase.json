@@ -1,0 +1,92 @@
+{
+  "tasks": [
+    {
+      "id": "1",
+      "difficulty": "Easy",
+      "tags": ["basics", "functions"],
+      "companyName": "TechFlow Systems",
+      "position": "Senior Frontend Developer",
+      "solvedCount": 1842,
+      "functionName": "sumTwoNumbers",
+      "testCases": [
+        { "args": [2, 3], "expected": 5, "label": "sumTwoNumbers(2, 3)" },
+        { "args": [-1, 1], "expected": 0, "label": "sumTwoNumbers(-1, 1)" },
+        { "args": [0, 0], "expected": 0, "label": "sumTwoNumbers(0, 0)" },
+        { "args": [100, -50], "expected": 50, "label": "sumTwoNumbers(100, -50)" },
+        { "args": [-999, -1], "expected": -1000, "label": "sumTwoNumbers(-999, -1)" }
+      ]
+    },
+    {
+      "id": "2",
+      "difficulty": "Easy",
+      "tags": ["strings", "basics"],
+      "companyName": "CloudBase Pro",
+      "position": "Backend Engineer",
+      "solvedCount": 1200,
+      "functionName": "reverseString",
+      "testCases": [
+        { "args": ["hello"], "expected": "olleh", "label": "reverseString('hello')" },
+        { "args": ["abc"], "expected": "cba", "label": "reverseString('abc')" },
+        { "args": [""], "expected": "", "label": "reverseString('')" },
+        { "args": ["a"], "expected": "a", "label": "reverseString('a')" },
+        { "args": ["racecar"], "expected": "racecar", "label": "reverseString('racecar')" }
+      ]
+    },
+    {
+      "id": "3",
+      "difficulty": "Easy",
+      "tags": ["basics", "loops", "conditions"],
+      "solvedCount": 980,
+      "functionName": "fizzBuzz",
+      "testCases": [
+        { "args": [3], "expected": ["1", "2", "Fizz"], "label": "fizzBuzz(3)" },
+        { "args": [5], "expected": ["1", "2", "Fizz", "4", "Buzz"], "label": "fizzBuzz(5)" },
+        { "args": [15], "expected": ["1", "2", "Fizz", "4", "Buzz", "Fizz", "7", "8", "Fizz", "Buzz", "11", "Fizz", "13", "14", "FizzBuzz"], "label": "fizzBuzz(15)" },
+        { "args": [1], "expected": ["1"], "label": "fizzBuzz(1)" }
+      ]
+    },
+    {
+      "id": "4",
+      "difficulty": "Medium",
+      "tags": ["arrays", "hash-table"],
+      "companyName": "DataMinds",
+      "position": "Senior Data Scientist",
+      "solvedCount": 456,
+      "functionName": "twoSum",
+      "testCases": [
+        { "args": [[2, 7, 11, 15], 9], "expected": [0, 1], "label": "twoSum([2,7,11,15], 9)" },
+        { "args": [[3, 2, 4], 6], "expected": [1, 2], "label": "twoSum([3,2,4], 6)" },
+        { "args": [[3, 3], 6], "expected": [0, 1], "label": "twoSum([3,3], 6)" }
+      ]
+    },
+    {
+      "id": "5",
+      "difficulty": "Easy",
+      "tags": ["strings", "two-pointers"],
+      "solvedCount": 750,
+      "functionName": "isPalindrome",
+      "testCases": [
+        { "args": ["A man a plan a canal Panama"], "expected": true, "label": "isPalindrome('A man a plan a canal Panama')" },
+        { "args": ["race a car"], "expected": false, "label": "isPalindrome('race a car')" },
+        { "args": [" "], "expected": true, "label": "isPalindrome(' ')" },
+        { "args": ["ab"], "expected": false, "label": "isPalindrome('ab')" }
+      ]
+    },
+    {
+      "id": "6",
+      "difficulty": "Hard",
+      "tags": ["dp", "arrays", "kadane"],
+      "companyName": "DataMinds",
+      "position": "Algorithm Engineer",
+      "solvedCount": 89,
+      "functionName": "maxSubArray",
+      "testCases": [
+        { "args": [[-2, 1, -3, 4, -1, 2, 1, -5, 4]], "expected": 6, "label": "maxSubArray([-2,1,-3,4,-1,2,1,-5,4])" },
+        { "args": [[1]], "expected": 1, "label": "maxSubArray([1])" },
+        { "args": [[5, 4, -1, 7, 8]], "expected": 23, "label": "maxSubArray([5,4,-1,7,8])" },
+        { "args": [[-1]], "expected": -1, "label": "maxSubArray([-1])" },
+        { "args": [[-2, -1]], "expected": -1, "label": "maxSubArray([-2,-1])" }
+      ]
+    }
+  ]
+}

@@ -1,4 +1,5 @@
 import { Send, Paperclip, Code2, MoreVertical } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import type { Conversation } from '../../types';
 
 export interface ChatMessage {
@@ -17,13 +18,15 @@ interface ChatWindowProps {
   onSendMessage?: () => void;
 }
 
-export default function ChatWindow({ 
-  selectedConversation, 
-  messages, 
-  newMessage, 
-  onMessageChange, 
-  onSendMessage 
+export default function ChatWindow({
+  selectedConversation,
+  messages,
+  newMessage,
+  onMessageChange,
+  onSendMessage
 }: ChatWindowProps) {
+  const { t } = useTranslation();
+
   return (
     <div className="flex-1 flex flex-col">
       {/* Шапка чата */}
@@ -34,7 +37,7 @@ export default function ChatWindow({
           </div>
           <div>
             <h3 className="font-semibold text-text-primary">{selectedConversation.companyName} — {selectedConversation.jobTitle}</h3>
-            <p className="text-xs text-text-muted">Онлайн</p>
+            <p className="text-xs text-text-muted">{t('chat.online')}</p>
           </div>
         </div>
         <button className="p-2 rounded-lg hover:bg-surface-elevated text-text-muted transition-colors">
@@ -92,10 +95,10 @@ export default function ChatWindow({
                 onSendMessage();
               }
             }}
-            placeholder="Введите сообщение..."
+            placeholder={t('chat.type_message')}
             className="flex-1 bg-surface-elevated border border-border rounded-xl px-4 py-2.5 text-sm text-text-primary placeholder:text-text-muted outline-none focus:border-primary/50"
           />
-          <button 
+          <button
             className="p-2.5 rounded-xl gradient-primary text-white hover:opacity-90 transition-opacity"
             onClick={onSendMessage}
           >

@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import type { Job } from '../../types';
 
 interface SimilarJobsCardProps {
@@ -6,11 +7,13 @@ interface SimilarJobsCardProps {
 }
 
 export default function SimilarJobsCard({ similarJobs }: SimilarJobsCardProps) {
+  const { t } = useTranslation();
+
   if (similarJobs.length === 0) return null;
 
   return (
     <div className="gradient-card rounded-xl p-6 border border-border">
-      <h3 className="text-lg font-bold text-text-primary mb-4">Похожие вакансии</h3>
+      <h3 className="text-lg font-bold text-text-primary mb-4">{t('job_details.similar_jobs')}</h3>
       <div className="space-y-3">
         {similarJobs.map(sj => (
           <Link

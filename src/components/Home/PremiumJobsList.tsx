@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import { Briefcase, ArrowRight } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import type { Job } from '../../types';
 
 interface PremiumJobsListProps {
@@ -7,15 +8,16 @@ interface PremiumJobsListProps {
 }
 
 export default function PremiumJobsList({ jobs }: PremiumJobsListProps) {
+  const { t } = useTranslation();
   return (
     <div className="lg:col-span-2 space-y-6">
       <div className="flex items-center justify-between border-b border-border pb-3">
         <h2 className="text-xl font-black text-text-primary flex items-center gap-2">
           <Briefcase size={20} className="text-primary" />
-          Премиум вакансии
+          {t('home.premium_jobs')}
         </h2>
         <Link to="/jobs" className="text-[10px] font-bold text-primary hover:underline uppercase tracking-widest">
-          Все вакансии
+          {t('home.all_jobs')}
         </Link>
       </div>
 
@@ -60,7 +62,7 @@ export default function PremiumJobsList({ jobs }: PremiumJobsListProps) {
 
             <div className="mt-4 pt-3 border-t border-border">
               <button className="w-full sm:w-auto sm:ml-auto justify-center sm:justify-end text-[13px] font-bold text-text-secondary hover:text-primary flex items-center gap-1.5 group/btn">
-                Откликнуться <ArrowRight size={16} className="group-hover/btn:translate-x-1 transition-transform" />
+                {t('home.apply')} <ArrowRight size={16} className="group-hover/btn:translate-x-1 transition-transform" />
               </button>
             </div>
           </Link>

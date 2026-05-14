@@ -1,4 +1,6 @@
-import { MapPin, Clock, Send, Bookmark } from 'lucide-react';
+import { MapPin, Clock, Send, Heart } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
+import { useFavorites } from '../../contexts/FavoritesContext';
 import type { Job } from '../../types';
 
 interface JobHeaderProps {
@@ -7,6 +9,10 @@ interface JobHeaderProps {
 }
 
 export default function JobHeader({ job, onApplyClick }: JobHeaderProps) {
+  const { t } = useTranslation();
+  const { isFavorite, toggleFavorite } = useFavorites();
+  const saved = isFavorite(job.id);
+
   return (
     <div className="gradient-card rounded-xl p-6 border border-border">
       <div className="flex items-start gap-4 mb-4">
@@ -20,7 +26,7 @@ export default function JobHeader({ job, onApplyClick }: JobHeaderProps) {
             <span className="flex items-center gap-1"><MapPin size={14} /> {job.location}</span>
             <span className="flex items-center gap-1"><Clock size={14} /> {job.experience}</span>
             <span className="px-2 py-0.5 rounded-md bg-surface-elevated text-text-secondary text-xs">
-              {job.type === 'remote' ? 'Удалённо' : job.type === 'hybrid' ? 'Гибрид' : 'Офис'}
+              {job.type === 'remote' ? t('job_card.remote') : job.type === 'hybrid' ? t('job_card.hybrid') : t('job_card.office')}
             </span>
           </div>
         </div>
@@ -28,7 +34,7 @@ export default function JobHeader({ job, onApplyClick }: JobHeaderProps) {
           <p className="text-2xl font-bold text-text-primary">
             {job.salary.currency}{job.salary.min}–{job.salary.max}
           </p>
-          <p className="text-sm text-text-muted">/месяц</p>
+          <p className="text-sm text-text-muted">{t('job_card.per_month')}</p>
         </div>
       </div>
 
@@ -41,14 +47,17 @@ export default function JobHeader({ job, onApplyClick }: JobHeaderProps) {
       </div>
 
       <div className="flex gap-3">
-        <button 
+        <button
           onClick={onApplyClick}
           className="flex-1 flex items-center justify-center gap-2 px-6 py-3 rounded-xl gradient-primary text-white font-medium hover:opacity-90 transition-opacity"
         >
-          <Send size={16} /> Откликнуться
+          <Send size={16} /> {t('home.apply')}
         </button>
-        <button className="px-4 py-3 rounded-xl border border-border text-text-secondary hover:text-text-primary hover:bg-surface-elevated transition-colors">
-          <Bookmark size={18} />
+        <button 
+          onClick={() => toggleFavorite(job.id)}
+          className={`px-4 py-3 rounded-xl border border-border transition-colors ${saved ? 'text-primary bg-primary/10' : 'text-text-secondary hover:text-text-primary hover:bg-surface-elevated'}`}
+        >
+          <Heart size={18} fill={saved ? 'currentColor' : 'none'} />
         </button>
       </div>
     </div>

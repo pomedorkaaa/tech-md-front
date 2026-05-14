@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import mockData from './JobDetailsMockData.json';
 import type { Job } from '../../types';
 
@@ -17,13 +18,14 @@ const jobs = [job];
 
 export default function JobDetailPage() {
   const { id } = useParams();
+  const { t } = useTranslation();
   const jobItem = jobs.find(j => j.id === id);
   const [isApplyModalOpen, setIsApplyModalOpen] = useState(false);
   const [coverLetter, setCoverLetter] = useState('');
 
   const handleApply = (e: React.FormEvent) => {
     e.preventDefault();
-    alert('Отклик успешно отправлен!');
+    alert(t('job_details.apply_success'));
     setIsApplyModalOpen(false);
     setCoverLetter('');
   };
@@ -31,8 +33,8 @@ export default function JobDetailPage() {
   if (!jobItem) {
     return (
       <div className="max-w-7xl mx-auto px-4 py-16 text-center">
-        <h1 className="text-2xl font-bold text-text-primary mb-4">Вакансия не найдена</h1>
-        <Link to="/jobs" className="text-primary hover:text-primary-light">← Вернуться к поиску</Link>
+        <h1 className="text-2xl font-bold text-text-primary mb-4">{t('job_details.not_found')}</h1>
+        <Link to="/jobs" className="text-primary hover:text-primary-light">{t('job_details.back_to_search')}</Link>
       </div>
     );
   }
@@ -42,7 +44,7 @@ export default function JobDetailPage() {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <Link to="/jobs" className="inline-flex items-center gap-1 text-sm text-text-muted hover:text-text-primary transition-colors mb-6">
-        <ArrowLeft size={16} /> Назад к вакансиям
+        <ArrowLeft size={16} /> {t('job_details.back_to_jobs')}
       </Link>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">

@@ -1,5 +1,6 @@
 import React from 'react';
 import { Camera, User, Mail, Briefcase, MapPin, Save } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import type { User as UserType } from '../../types';
 
 interface Props {
@@ -12,17 +13,18 @@ interface Props {
 }
 
 export const UserProfileHeader: React.FC<Props> = ({ profile, formData, isEditing, handleChange, handleSubmit, toggleEditing }) => {
+  const { t } = useTranslation();
   return (
     <>
       <div className="flex items-center justify-between mb-8">
-        <h1 className="text-3xl font-black text-text-primary">Настройки профиля</h1>
+        <h1 className="text-3xl font-black text-text-primary">{t('profile.settings_title')}</h1>
         <button
           onClick={toggleEditing}
           className={`text-sm font-bold px-4 py-2 rounded-lg transition-colors ${
             isEditing ? 'text-text-muted hover:text-text-primary' : 'bg-primary/10 text-primary hover:bg-primary/20'
           }`}
         >
-          {isEditing ? 'Отмена' : 'Редактировать'}
+          {isEditing ? t('profile.cancel') : t('profile.edit')}
         </button>
       </div>
 
@@ -48,7 +50,7 @@ export const UserProfileHeader: React.FC<Props> = ({ profile, formData, isEditin
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
             <div className="space-y-2">
               <label className="text-xs font-bold text-text-secondary uppercase tracking-wider flex items-center gap-2">
-                <User size={14} /> Имя и фамилия
+                <User size={14} /> {t('profile.full_name')}
               </label>
               <input
                 type="text"
@@ -76,7 +78,7 @@ export const UserProfileHeader: React.FC<Props> = ({ profile, formData, isEditin
 
             <div className="space-y-2">
               <label className="text-xs font-bold text-text-secondary uppercase tracking-wider flex items-center gap-2">
-                <Briefcase size={14} /> Должность
+                <Briefcase size={14} /> {t('profile.job_title')}
               </label>
               <input
                 type="text"
@@ -85,13 +87,13 @@ export const UserProfileHeader: React.FC<Props> = ({ profile, formData, isEditin
                 onChange={handleChange}
                 disabled={!isEditing}
                 className="w-full bg-surface-elevated border border-border rounded-lg px-4 py-2.5 text-sm text-text-primary focus:ring-2 focus:ring-primary focus:outline-none disabled:opacity-70 transition-all"
-                placeholder="Например, Senior React Developer"
+                placeholder={t('profile.job_title_ph')}
               />
             </div>
 
             <div className="space-y-2">
               <label className="text-xs font-bold text-text-secondary uppercase tracking-wider flex items-center gap-2">
-                <MapPin size={14} /> Локация
+                <MapPin size={14} /> {t('profile.location')}
               </label>
               <input
                 type="text"
@@ -100,7 +102,7 @@ export const UserProfileHeader: React.FC<Props> = ({ profile, formData, isEditin
                 onChange={handleChange}
                 disabled={!isEditing}
                 className="w-full bg-surface-elevated border border-border rounded-lg px-4 py-2.5 text-sm text-text-primary focus:ring-2 focus:ring-primary focus:outline-none disabled:opacity-70 transition-all"
-                placeholder="Например, Кишинёв"
+                placeholder={t('profile.location_ph')}
               />
             </div>
           </div>
@@ -111,7 +113,7 @@ export const UserProfileHeader: React.FC<Props> = ({ profile, formData, isEditin
                 type="submit"
                 className="flex items-center gap-2 px-6 py-2.5 bg-primary text-white font-bold text-sm rounded-lg hover:bg-primary-dark transition-colors shadow-md shadow-primary/20"
               >
-                <Save size={16} /> Сохранить изменения
+                <Save size={16} /> {t('profile.save_changes')}
               </button>
             </div>
           )}

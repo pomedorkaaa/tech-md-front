@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import { Flame } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import type { Task } from '../../types';
 
 interface DailyChallengeWidgetProps {
@@ -7,12 +8,13 @@ interface DailyChallengeWidgetProps {
 }
 
 export default function DailyChallengeWidget({ tasks }: DailyChallengeWidgetProps) {
+  const { t } = useTranslation();
   return (
     <div className="bg-charcoal rounded-2xl border border-border overflow-hidden shadow-md">
       <div className="p-4 border-b border-border bg-surface-elevated flex items-center justify-between">
         <h3 className="font-black text-xs uppercase tracking-widest text-text-primary flex items-center gap-2">
           <Flame size={16} className="text-yellow-500" />
-          Daily Challenge
+          {t('home.daily_challenge')}
         </h3>
       </div>
       <div className="p-4 space-y-4">
@@ -42,7 +44,7 @@ export default function DailyChallengeWidget({ tasks }: DailyChallengeWidgetProp
            </Link>
         ))}
         <Link to="/sandbox" className="block text-center w-full py-2.5 rounded-lg bg-primary/10 text-primary text-[10px] font-black uppercase tracking-widest hover:bg-primary hover:text-white transition-all">
-          Перейти в Песочницу
+          {t('home.go_sandbox')}
         </Link>
       </div>
     </div>

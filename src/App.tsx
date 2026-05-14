@@ -19,6 +19,7 @@ import LoginPage from './pages/Auth/LoginPage';
 import RegisterPage from './pages/Auth/RegisterPage';
 import UserProfilePage from './pages/UserProfile/UserProfilePage';
 import SettingsPage from './pages/Settings/SettingsPage';
+import NotificationsPage from './pages/Notifications/NotificationsPage';
 import ProtectedRoute from './components/Auth/ProtectedRoute';
 import AboutPage from './pages/Static/AboutPage';
 import SupportPage from './pages/Static/SupportPage';
@@ -57,6 +58,7 @@ export default function App() {
             <Route path="/profile" element={<UserProfilePage />} />
             <Route path="/settings" element={<SettingsPage />} />
             <Route path="/chat" element={<ChatPage />} />
+            <Route path="/notifications" element={<NotificationsPage />} />
           </Route>
 
           {/* Маршруты для кандидатов */}

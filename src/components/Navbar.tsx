@@ -1,6 +1,7 @@
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { Search, Menu, X, Sun, Moon, User, LogOut, Settings, MessageCircle, Briefcase, ChevronDown, Shield } from 'lucide-react';
+import { Search, Menu, X, Sun, Moon, User, LogOut, Settings, MessageCircle, Briefcase, ChevronDown, Shield, Bell } from 'lucide-react';
 import { useState, useRef, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useTheme } from '../contexts/ThemeContext';
 import { useAuth } from '../contexts/AuthContext';
 
@@ -15,9 +16,12 @@ export default function Navbar() {
   const navigate = useNavigate();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [langOpen, setLangOpen] = useState(false);
   const { theme, toggleTheme } = useTheme();
   const { user, isAuthenticated, logout } = useAuth();
+  const { t, i18n } = useTranslation();
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const langRef = useRef<HTMLDivElement>(null);
 
   const initials = user?.name?.charAt(0)?.toUpperCase() || '?';
 
@@ -26,6 +30,9 @@ export default function Navbar() {
     const handler = (e: MouseEvent) => {
       if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
         setDropdownOpen(false);
+      }
+      if (langRef.current && !langRef.current.contains(e.target as Node)) {
+        setLangOpen(false);
       }
     };
     document.addEventListener('mousedown', handler);
@@ -41,12 +48,24 @@ export default function Navbar() {
 
   // Ссылки для авторизованного dropdown
   const userMenuLinks = [
-    { label: 'Профиль', path: '/profile', icon: User },
-    { label: 'Сообщения', path: '/chat', icon: MessageCircle },
-    ...(user?.role === 'candidate' ? [{ label: 'Личный кабинет', path: '/dashboard', icon: Briefcase }] : []),
-    ...(user?.role === 'employer' ? [{ label: 'Панель работодателя', path: '/employer', icon: Briefcase }] : []),
-    ...(user?.role === 'admin' ? [{ label: 'Админка', path: '/admin', icon: Shield }] : []),
-    { label: 'Настройки', path: '/settings', icon: Settings },
+    { label: t('nav.profile'), path: '/profile', icon: User },
+    { label: t('nav.messages'), path: '/chat', icon: MessageCircle },
+    { label: t('nav.notifications') || 'Уведомления', path: '/notifications', icon: Bell },
+    ...(user?.role === 'candidate' ? [{ label: t('nav.dashboard'), path: '/dashboard', icon: Briefcase }] : []),
+    ...(user?.role === 'employer' ? [{ label: t('nav.employer_panel'), path: '/employer', icon: Briefcase }] : []),
+    ...(user?.role === 'admin' ? [{ label: t('nav.admin_panel'), path: '/admin', icon: Shield }] : []),
+    { label: t('nav.settings'), path: '/settings', icon: Settings },
+  ];
+
+  const changeLanguage = (lng: string) => {
+    i18n.changeLanguage(lng);
+    setLangOpen(false);
+  };
+
+  const navLinksTranslated = [
+    { label: t('nav.jobs'), path: '/jobs' },
+    { label: t('nav.companies'), path: '/companies' },
+    { label: t('nav.sandbox'), path: '/sandbox' },
   ];
 
   return (
@@ -65,7 +84,7 @@ export default function Navbar() {
 
           {/* Навигация (десктоп) */}
           <div className="hidden md:flex items-center gap-6">
-            {navLinks.map((link) => (
+            {navLinksTranslated.map((link) => (
               <Link
                 key={link.label}
                 to={link.path}
@@ -93,6 +112,23 @@ export default function Navbar() {
             >
               {theme === 'dark' ? <Sun size={16} /> : <Moon size={16} />}
             </button>
+
+            {/* Выбор языка */}
+            <div className="relative" ref={langRef}>
+              <button
+                onClick={() => setLangOpen(!langOpen)}
+                className="flex items-center justify-center w-8 h-8 rounded-lg border border-border text-xs font-bold text-text-secondary hover:bg-surface-elevated hover:text-text-primary transition-colors uppercase"
+              >
+                {i18n.language.substring(0, 2)}
+              </button>
+              {langOpen && (
+                <div className="absolute right-0 top-full mt-2 w-24 bg-surface-paper border border-border rounded-xl shadow-2xl py-2 z-50 animate-in fade-in slide-in-from-top-2">
+                  <button onClick={() => changeLanguage('ru')} className={`block w-full text-left px-4 py-1.5 text-sm hover:bg-surface-elevated transition-colors ${i18n.language.startsWith('ru') ? 'text-primary font-bold' : 'text-text-secondary'}`}>RU</button>
+                  <button onClick={() => changeLanguage('ro')} className={`block w-full text-left px-4 py-1.5 text-sm hover:bg-surface-elevated transition-colors ${i18n.language.startsWith('ro') ? 'text-primary font-bold' : 'text-text-secondary'}`}>RO</button>
+                  <button onClick={() => changeLanguage('en')} className={`block w-full text-left px-4 py-1.5 text-sm hover:bg-surface-elevated transition-colors ${i18n.language.startsWith('en') ? 'text-primary font-bold' : 'text-text-secondary'}`}>EN</button>
+                </div>
+              )}
+            </div>
 
             <div className="h-5 w-px bg-border mx-1"></div>
 
@@ -131,7 +167,7 @@ export default function Navbar() {
                         onClick={handleLogout}
                         className="flex items-center gap-3 px-4 py-2 w-full text-sm text-error hover:bg-error/5 transition-colors"
                       >
-                        <LogOut size={16} /> Выйти
+                        <LogOut size={16} /> {t('nav.logout')}
                       </button>
                     </div>
                   </div>
@@ -144,13 +180,13 @@ export default function Navbar() {
                   to="/login"
                   className="text-sm font-semibold text-text-muted hover:text-text-primary transition-colors px-2"
                 >
-                  Войти
+                  {t('nav.login')}
                 </Link>
                 <Link
                   to="/register"
                   className="rounded-lg bg-primary px-4 py-1.5 text-sm font-bold text-white hover:bg-primary-dark transition-all shadow-md shadow-primary/20"
                 >
-                  Регистрация
+                  {t('nav.register')}
                 </Link>
               </>
             )}
@@ -178,7 +214,7 @@ export default function Navbar() {
       {mobileOpen && (
         <div className="md:hidden border-t border-border bg-surface-paper">
           <div className="px-4 py-3 space-y-1">
-            {navLinks.map((link) => (
+            {navLinksTranslated.map((link) => (
               <Link
                 key={link.label}
                 to={link.path}
@@ -208,7 +244,7 @@ export default function Navbar() {
                   ))}
                   <button onClick={handleLogout}
                     className="flex items-center gap-3 px-4 py-2 w-full rounded-lg text-sm text-error hover:bg-error/5 transition-colors">
-                    <LogOut size={16}/> Выйти
+                    <LogOut size={16}/> {t('nav.logout')}
                   </button>
                 </div>
               </>
@@ -216,11 +252,11 @@ export default function Navbar() {
               <div className="pt-3 border-t border-border flex gap-2">
                 <Link to="/login" onClick={() => setMobileOpen(false)}
                   className="flex-1 px-4 py-2 text-center text-sm font-medium text-text-secondary border border-border rounded-lg hover:bg-surface-elevated">
-                  Вход
+                  {t('nav.login')}
                 </Link>
                 <Link to="/register" onClick={() => setMobileOpen(false)}
                   className="flex-1 px-4 py-2 text-center text-sm font-medium text-white rounded-lg gradient-primary">
-                  Регистрация
+                  {t('nav.register')}
                 </Link>
               </div>
             )}

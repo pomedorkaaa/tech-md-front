@@ -1,4 +1,5 @@
 import { Bookmark } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import type { SavedSnippet } from '../../types';
 
 interface SavedSnippetsListProps {
@@ -6,10 +7,12 @@ interface SavedSnippetsListProps {
 }
 
 export default function SavedSnippetsList({ snippets }: SavedSnippetsListProps) {
+  const { t } = useTranslation();
+
   return (
     <div className="gradient-card rounded-xl p-6 border border-border">
       <h2 className="text-lg font-bold text-text-primary flex items-center gap-2 mb-4">
-        <Bookmark size={18} /> Сохранённое
+        <Bookmark size={18} /> {t('dashboard.saved_snippets')}
       </h2>
       <div className="space-y-3">
         {snippets.map(snippet => (

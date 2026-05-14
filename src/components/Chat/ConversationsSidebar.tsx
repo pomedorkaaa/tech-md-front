@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import type { Conversation } from '../../types';
 
 interface ConversationsSidebarProps {
@@ -7,10 +8,12 @@ interface ConversationsSidebarProps {
 }
 
 export default function ConversationsSidebar({ conversations, selectedConversation, onSelect }: ConversationsSidebarProps) {
+  const { t } = useTranslation();
+
   return (
     <div className="w-80 shrink-0 border-r border-border bg-surface-paper flex flex-col">
       <div className="p-4 border-b border-border">
-        <h2 className="text-lg font-bold text-text-primary">Сообщения</h2>
+        <h2 className="text-lg font-bold text-text-primary">{t('chat.conversations')}</h2>
         <p className="text-xs text-text-muted mt-1">Активные диалоги</p>
       </div>
       <div className="flex-1 overflow-y-auto">
