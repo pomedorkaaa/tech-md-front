@@ -217,3 +217,12 @@ export async function registerApi(
 export async function getMeApi(): Promise<AuthResponse['user']> {
   return fetchApi<AuthResponse['user']>('/user/me', {}, true);
 }
+
+// ─── Уведомления ─────────────────────────────────────────
+export async function getNotifications() {
+  return fetchApi<{ id: number; title: string; message: string; isRead: boolean; createdAt: string }[]>('/notifications');
+}
+
+export async function markNotificationRead(id: number) {
+  return fetchApi<void>(`/notifications/${id}/read`, { method: 'POST' });
+}
