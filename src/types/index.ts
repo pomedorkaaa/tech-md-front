@@ -161,6 +161,16 @@ export interface SavedSnippet {
   description: string;
 }
 
+// ─── Уведомление ─────────────────────────────────────────
+export interface Notification {
+  id: string;
+  title: string;
+  message: string;
+  isRead: boolean;
+  createdAt: string;
+  userId: string;
+}
+
 // ─── Запись журнала активности ────────────────────────────
 export interface ActivityLog {
   id: string;
