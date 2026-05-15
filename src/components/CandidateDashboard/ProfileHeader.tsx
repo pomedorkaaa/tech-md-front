@@ -6,10 +6,16 @@ interface ProfileHeaderProps {
 }
 
 export default function ProfileHeader({ user }: ProfileHeaderProps) {
+  const initials = user.name ? user.name.split(' ').map(n => n[0]).join('') : '?';
+  const subtitleParts = [
+    user.verified ? 'Профиль подтверждён' : 'Профиль не подтверждён',
+    user.location,
+  ].filter(Boolean);
+
   return (
     <div className="flex items-center gap-6">
       <div className="w-20 h-20 rounded-full bg-primary/20 flex items-center justify-center text-primary text-2xl font-bold shrink-0">
-        {user.name.split(' ').map(n => n[0]).join('')}
+        {initials}
       </div>
       <div className="flex-1">
         <div className="flex items-center gap-2 mb-1">
@@ -18,10 +24,8 @@ export default function ProfileHeader({ user }: ProfileHeaderProps) {
             <CheckCircle size={18} className="text-primary" />
           )}
         </div>
-        <p className="text-text-secondary">{user.title}</p>
-        <p className="text-sm text-text-muted">
-          Профиль подтвержден • {user.location}
-        </p>
+        <p className="text-text-secondary">{user.title || 'Профиль кандидата'}</p>
+        <p className="text-sm text-text-muted">{subtitleParts.join(' • ')}</p>
       </div>
     </div>
   );

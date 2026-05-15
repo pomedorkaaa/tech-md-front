@@ -29,26 +29,30 @@ export default function ApplicationsList({ applications }: ApplicationsListProps
         </Link>
       </div>
       <div className="space-y-3">
-        {applications.map(app => {
-          const status = statusConfig[app.status];
-          const StatusIcon = status.icon;
-          return (
-            <div key={app.id} className="flex items-center justify-between p-4 rounded-xl bg-surface-elevated hover:bg-surface-overlay transition-colors">
-              <div>
-                <h3 className="font-medium text-text-primary">{app.jobTitle}</h3>
-                <p className="text-sm text-text-muted">{app.companyName} • {app.appliedAt}</p>
+        {applications.length === 0 ? (
+          <p className="text-sm text-text-muted text-center py-6">Вы ещё не отправляли отклики</p>
+        ) : (
+          applications.map(app => {
+            const status = statusConfig[app.status];
+            const StatusIcon = status.icon;
+            return (
+              <div key={app.id} className="flex items-center justify-between p-4 rounded-xl bg-surface-elevated hover:bg-surface-overlay transition-colors">
+                <div>
+                  <h3 className="font-medium text-text-primary">{app.jobTitle}</h3>
+                  <p className="text-sm text-text-muted">{app.companyName} • {app.appliedAt ? new Date(app.appliedAt).toLocaleDateString() : ''}</p>
+                </div>
+                <div className="flex items-center gap-3">
+                  {app.testScore != null && (
+                    <span className="text-sm text-text-secondary">{app.testScore}%</span>
+                  )}
+                  <span className={`flex items-center gap-1 px-3 py-1 text-xs rounded-full font-medium ${status.color}`}>
+                    <StatusIcon size={12} /> {status.label}
+                  </span>
+                </div>
               </div>
-              <div className="flex items-center gap-3">
-                {app.testScore && (
-                  <span className="text-sm text-text-secondary">{app.testScore}%</span>
-                )}
-                <span className={`flex items-center gap-1 px-3 py-1 text-xs rounded-full font-medium ${status.color}`}>
-                  <StatusIcon size={12} /> {status.label}
-                </span>
-              </div>
-            </div>
-          );
-        })}
+            );
+          })
+        )}
       </div>
     </div>
   );
