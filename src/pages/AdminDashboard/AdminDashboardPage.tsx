@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import type { ActivityLog } from '../../types';
-import { getActivityLogs, getAdminStats } from '../../services/api';
+import { getActivityLogs, getAdminStats, type AdminStatsData } from '../../services/api';
 import StatCards from '../../components/AdminDashboard/StatCards';
 import SessionActivityChart from '../../components/AdminDashboard/SessionActivityChart';
 import TechStackStats from '../../components/AdminDashboard/TechStackStats';
@@ -8,13 +8,7 @@ import ActivityLogViewer from '../../components/AdminDashboard/ActivityLogViewer
 import OnlineModerators from '../../components/AdminDashboard/OnlineModerators';
 import GlobalNotificationForm from '../../components/AdminDashboard/GlobalNotificationForm';
 
-export interface AdminStatsData {
-  totalUsers: number;
-  totalCompanies: number;
-  totalJobs: number;
-  totalApplications: number;
-  totalActivityLogs: number;
-}
+export type { AdminStatsData };
 
 export default function AdminDashboard() {
   const [logs, setLogs] = useState<ActivityLog[]>([]);
@@ -34,7 +28,7 @@ export default function AdminDashboard() {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <SessionActivityChart />
-        <TechStackStats stats={[]} />
+        <TechStackStats />
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-6">
