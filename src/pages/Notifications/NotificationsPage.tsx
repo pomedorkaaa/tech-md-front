@@ -1,42 +1,37 @@
 import { useState, useEffect } from 'react';
-import { Bell, Check, Trash2 } from 'lucide-react';
-import { fetchApi } from '../../services/api';
-
-interface Notification {
-  id: number;
-  title: string;
-  message: string;
-  isRead: boolean;
-  createdAt: string;
-}
+import { Bell, Check, CheckCheck } from 'lucide-react';
+import { getNotifications, markNotificationRead } from '../../services/api';
+import type { Notification } from '../../types';
 
 export default function NotificationsPage() {
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    loadNotifications();
+    let mounted = true;
+    getNotifications()
+      .then(data => { if (mounted) setNotifications(data); })
+      .catch(() => { if (mounted) setNotifications([]); })
+      .finally(() => { if (mounted) setLoading(false); });
+    return () => { mounted = false; };
   }, []);
-
-  const loadNotifications = async () => {
-    try {
-      const data = await fetchApi<Notification[]>('/notifications');
-      setNotifications(data);
-    } catch {
-      setNotifications([]);
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const markAsRead = async (id: number) => {
     try {
-      await fetchApi(`/notifications/${id}/read`, { method: 'POST' });
+      await markNotificationRead(id);
       setNotifications(prev =>
         prev.map(n => n.id === id ? { ...n, isRead: true } : n)
       );
-    } catch { }
+    } catch { /* noop */ }
   };
+
+  const markAllRead = async () => {
+    const unread = notifications.filter(n => !n.isRead);
+    await Promise.allSettled(unread.map(n => markNotificationRead(n.id)));
+    setNotifications(prev => prev.map(n => ({ ...n, isRead: true })));
+  };
+
+  const unreadCount = notifications.filter(n => !n.isRead).length;
 
   if (loading) {
     return (
@@ -52,9 +47,24 @@ export default function NotificationsPage() {
 
   return (
     <div className="max-w-3xl mx-auto px-4 py-8">
-      <div className="flex items-center gap-3 mb-6">
-        <Bell size={24} className="text-primary" />
-        <h1 className="text-2xl font-bold text-text-primary">Уведомления</h1>
+      <div className="flex items-center justify-between mb-6">
+        <div className="flex items-center gap-3">
+          <Bell size={24} className="text-primary" />
+          <h1 className="text-2xl font-bold text-text-primary">Уведомления</h1>
+          {unreadCount > 0 && (
+            <span className="px-2 py-0.5 text-xs rounded-full bg-primary/20 text-primary font-bold">
+              {unreadCount}
+            </span>
+          )}
+        </div>
+        {unreadCount > 0 && (
+          <button
+            onClick={markAllRead}
+            className="flex items-center gap-1.5 text-sm text-primary hover:text-primary-light transition-colors"
+          >
+            <CheckCheck size={16} /> Прочитать все
+          </button>
+        )}
       </div>
 
       {notifications.length === 0 ? (
@@ -87,6 +97,7 @@ export default function NotificationsPage() {
                   <button
                     onClick={() => markAsRead(notification.id)}
                     className="p-2 rounded-lg hover:bg-surface-elevated text-text-muted hover:text-primary transition-colors"
+                    title="Прочитано"
                   >
                     <Check size={16} />
                   </button>

@@ -3,21 +3,21 @@ import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../contexts/AuthContext';
 import type { User as UserType } from '../../types';
 import { UserProfileHeader } from '../../components/UserProfile/UserProfileHeader';
-import { UserExperience } from '../../components/UserProfile/UserExperience';
-import { UserEducation } from '../../components/UserProfile/UserEducation';
-import { UserSkills } from '../../components/UserProfile/UserSkills';
 import { useFavorites } from '../../contexts/FavoritesContext';
 import JobCard from '../../components/Jobs/JobCard';
-import { useMockData } from '../../hooks/useMockData';
 import { Bookmark } from 'lucide-react';
+import { getJobs, updateProfile, mapAuthUser } from '../../services/api';
+import type { Job } from '../../types';
 
 export default function UserProfilePage() {
   const { t } = useTranslation();
-  const { user } = useAuth();
+  const { user, updateUser } = useAuth();
   const { savedJobIds } = useFavorites();
   const [activeTab, setActiveTab] = useState<'profile' | 'favorites'>('profile');
   const [profile, setProfile] = useState<UserType | null>(null);
   const [isEditing, setIsEditing] = useState(false);
+  const [allJobs, setAllJobs] = useState<Job[]>([]);
+  const [saveError, setSaveError] = useState('');
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -37,23 +37,36 @@ export default function UserProfilePage() {
     }
   }, [user]);
 
+  useEffect(() => {
+    getJobs().then(setAllJobs).catch(() => setAllJobs([]));
+  }, []);
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
+    setSaveError('');
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Здесь будет вызов API для обновления профиля
-    setProfile(prev => prev ? { ...prev, ...formData } : null);
-    setIsEditing(false);
-    alert(t('profile.profile_updated'));
+    if (!user) return;
+    setSaveError('');
+    try {
+      const updated = await updateProfile(user.id, {
+        title: formData.title,
+        location: formData.location,
+      });
+      const merged = { ...mapAuthUser(updated), name: formData.name };
+      updateUser(merged);
+      setProfile(prev => prev ? { ...prev, ...merged } : null);
+      setIsEditing(false);
+    } catch (err: any) {
+      setSaveError(err?.message || 'Не удалось обновить профиль');
+    }
   };
 
   const toggleEditing = () => setIsEditing(!isEditing);
 
-  const mockData = useMockData<{ jobs: any[] }>('JobsMockData.json', { jobs: [] });
-  const mockJobs = mockData.jobs || [];
-  const savedJobs = mockJobs.filter((j: any) => savedJobIds.includes(j.id));
+  const savedJobs = allJobs.filter(j => savedJobIds.includes(j.id));
 
   if (!profile) return <div className="p-8 text-center text-text-muted">{t('profile.loading_profile')}</div>;
 
@@ -83,6 +96,9 @@ export default function UserProfilePage() {
 
       {activeTab === 'profile' ? (
         <div className="max-w-3xl space-y-6">
+          {saveError && (
+            <div className="bg-error/10 border border-error/30 rounded-lg p-3 text-error text-sm">{saveError}</div>
+          )}
           <UserProfileHeader 
             profile={profile} 
             formData={formData} 
@@ -91,9 +107,6 @@ export default function UserProfilePage() {
             handleSubmit={handleSubmit} 
             toggleEditing={toggleEditing} 
           />
-          <UserExperience />
-          <UserEducation />
-          <UserSkills />
         </div>
       ) : (
         <div className="space-y-4">
@@ -105,7 +118,7 @@ export default function UserProfilePage() {
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {savedJobs.map((job: any) => (
+              {savedJobs.map(job => (
                 <JobCard key={job.id} job={job} />
               ))}
             </div>
