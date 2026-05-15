@@ -5,12 +5,6 @@ import { useTranslation } from 'react-i18next';
 import { useTheme } from '../contexts/ThemeContext';
 import { useAuth } from '../contexts/AuthContext';
 
-const navLinks = [
-  { label: 'Вакансии', path: '/jobs' },
-  { label: 'Компании', path: '/companies' },
-  { label: 'Задачи', path: '/sandbox' },
-];
-
 export default function Navbar() {
   const location = useLocation();
   const navigate = useNavigate();
@@ -101,9 +95,13 @@ export default function Navbar() {
 
           {/* Правая часть (десктоп) */}
           <div className="hidden md:flex items-center gap-2">
-            <button className="flex items-center justify-center w-8 h-8 rounded-lg border border-border text-text-muted hover:bg-surface-elevated hover:text-text-primary transition-colors">
+            <Link
+              to="/jobs"
+              className="flex items-center justify-center w-8 h-8 rounded-lg border border-border text-text-muted hover:bg-surface-elevated hover:text-text-primary transition-colors"
+              title={t('jobs.search_placeholder')}
+            >
               <Search size={16} />
-            </button>
+            </Link>
 
             <button
               onClick={toggleTheme}

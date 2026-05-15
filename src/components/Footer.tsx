@@ -91,9 +91,9 @@ export default function Footer() {
             {t('footer.copyright')}
           </p>
           <div className="flex items-center gap-4 text-text-muted">
-            <a href="#" className="hover:text-text-primary transition-colors text-lg">𝕏</a>
-            <a href="#" className="hover:text-text-primary transition-colors text-sm font-bold">in</a>
-            <a href="#" className="hover:text-text-primary transition-colors text-sm font-bold">GH</a>
+            <a href="https://x.com" target="_blank" rel="noreferrer noopener" className="hover:text-text-primary transition-colors text-lg" aria-label="X / Twitter">𝕏</a>
+            <a href="https://www.linkedin.com" target="_blank" rel="noreferrer noopener" className="hover:text-text-primary transition-colors text-sm font-bold" aria-label="LinkedIn">in</a>
+            <a href="https://github.com" target="_blank" rel="noreferrer noopener" className="hover:text-text-primary transition-colors text-sm font-bold" aria-label="GitHub">GH</a>
           </div>
         </div>
       </div>
