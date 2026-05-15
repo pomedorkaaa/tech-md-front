@@ -44,7 +44,7 @@ export interface Job {
     currency: string;
   };
   experience: string;
-  type: 'full-time' | 'part-time' | 'remote' | 'hybrid';
+  type: 'full-time' | 'part-time' | 'remote' | 'hybrid' | 'contract' | 'internship';
   description: string;
   requirements: string[];
   benefits: string[];
@@ -163,7 +163,7 @@ export interface SavedSnippet {
 
 // ─── Уведомление ─────────────────────────────────────────
 export interface Notification {
-  id: string;
+  id: number;
   title: string;
   message: string;
   isRead: boolean;

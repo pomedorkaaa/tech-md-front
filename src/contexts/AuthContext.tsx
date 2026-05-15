@@ -1,6 +1,10 @@
 import { createContext, useContext, useState, useEffect, type ReactNode } from 'react';
 import type { User } from '../types';
-import { loginApi, registerApi, getMeApi, setStoredToken, clearStoredToken, getStoredToken } from '../services/api';
+import {
+  loginApi, registerApi, getMeApi,
+  setStoredToken, clearStoredToken, getStoredToken,
+  mapAuthUser,
+} from '../services/api';
 
 interface AuthContextType {
   user: User | null;
@@ -15,22 +19,6 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 const USER_KEY = 'techmoldova-auth-user';
-
-function mapBackendUser(backendUser: any): User {
-  return {
-    id: String(backendUser.id),
-    name: backendUser.username,
-    email: backendUser.email,
-    role: backendUser.role.toLowerCase() as 'candidate' | 'employer' | 'admin',
-    title: backendUser.profile?.title,
-    location: backendUser.profile?.location,
-    avatar: backendUser.profile?.avatar,
-    codingScore: backendUser.profile?.codingScore,
-    solvedTasks: backendUser.profile?.solvedTasks,
-    rank: backendUser.profile?.rank,
-    verified: backendUser.profile?.verified,
-  };
-}
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(() => {
@@ -61,7 +49,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     getMeApi()
       .then((backendUser) => {
-        setUser(mapBackendUser(backendUser));
+        setUser(mapAuthUser(backendUser));
       })
       .catch(() => {
         clearStoredToken();
@@ -73,14 +61,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const login = async (username: string, password: string) => {
     const response = await loginApi(username, password);
     setStoredToken(response.token);
-    setUser(mapBackendUser(response.user));
+    setUser(mapAuthUser(response.user));
   };
 
   const register = async (username: string, email: string, password: string, role: 'candidate' | 'employer') => {
+    // backend ожидает Pascal-case ("Candidate"|"Employer")
     const roleCapitalized = role.charAt(0).toUpperCase() + role.slice(1);
     const response = await registerApi(username, email, password, roleCapitalized);
     setStoredToken(response.token);
-    setUser(mapBackendUser(response.user));
+    setUser(mapAuthUser(response.user));
   };
 
   const logout = () => {
