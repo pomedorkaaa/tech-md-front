@@ -1,9 +1,19 @@
-import { Link } from 'react-router-dom';
+import { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import { Search, Code } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
 export default function HeroSection() {
   const { t } = useTranslation();
+  const navigate = useNavigate();
+  const [query, setQuery] = useState('');
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    const q = query.trim();
+    navigate(q ? `/jobs?q=${encodeURIComponent(q)}` : '/jobs');
+  };
+
   return (
     <section className="relative">
       <div className="flex flex-col lg:flex-row items-center gap-10 py-8">
@@ -14,7 +24,7 @@ export default function HeroSection() {
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
                 <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-primary"></span>
               </span>
-              452 {t('home.hero_new_jobs')}
+              {t('home.hero_new_jobs')}
             </div>
 
             <h1 className="text-4xl sm:text-5xl lg:text-[52px] font-black tracking-tight text-text-primary leading-tight">
@@ -27,14 +37,16 @@ export default function HeroSection() {
           </div>
 
           <div className="w-full max-w-lg mx-auto lg:mx-0">
-            <form className="relative group">
+            <form className="relative group" onSubmit={handleSubmit}>
               <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                 <Search size={20} className="text-primary" />
               </div>
-              <input 
-                type="text" 
-                placeholder={t('home.search_placeholder')} 
-                className="block w-full pl-12 pr-32 py-4 rounded-xl border border-border bg-charcoal text-text-primary shadow-xl focus:ring-2 focus:ring-primary focus:border-transparent placeholder-text-muted transition-all outline-none text-sm" 
+              <input
+                type="text"
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                placeholder={t('home.search_placeholder')}
+                className="block w-full pl-12 pr-32 py-4 rounded-xl border border-border bg-charcoal text-text-primary shadow-xl focus:ring-2 focus:ring-primary focus:border-transparent placeholder-text-muted transition-all outline-none text-sm"
               />
               <div className="absolute inset-y-1.5 right-1.5 flex items-center">
                 <button type="submit" className="bg-primary hover:bg-primary-dark text-white px-6 h-full rounded-lg text-sm font-bold transition-all shadow-md shadow-primary/20">
@@ -59,7 +71,7 @@ export default function HeroSection() {
             </div>
           </div>
         </div>
-        
+
         <div className="flex-1 w-full max-w-md hidden lg:block">
           <div className="relative rounded-2xl overflow-hidden border border-border bg-charcoal shadow-2xl">
             <div className="h-8 border-b border-border bg-charcoal-light flex items-center px-4 gap-2">

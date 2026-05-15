@@ -22,7 +22,12 @@ export default function PremiumJobsList({ jobs }: PremiumJobsListProps) {
       </div>
 
       <div className="space-y-3">
-        {jobs.map(job => (
+        {jobs.length === 0 ? (
+          <div className="bg-charcoal rounded-2xl p-6 border border-border text-center text-sm text-text-muted">
+            Пока нет вакансий
+          </div>
+        ) : (
+          jobs.map(job => (
           <Link
             key={job.id}
             to={`/jobs/${job.id}`}
@@ -60,13 +65,14 @@ export default function PremiumJobsList({ jobs }: PremiumJobsListProps) {
               </div>
             </div>
 
-            <div className="mt-4 pt-3 border-t border-border">
-              <button className="w-full sm:w-auto sm:ml-auto justify-center sm:justify-end text-[13px] font-bold text-text-secondary hover:text-primary flex items-center gap-1.5 group/btn">
-                {t('home.apply')} <ArrowRight size={16} className="group-hover/btn:translate-x-1 transition-transform" />
-              </button>
+            <div className="mt-4 pt-3 border-t border-border flex justify-end">
+              <span className="text-[13px] font-bold text-text-secondary group-hover:text-primary flex items-center gap-1.5">
+                {t('home.apply')} <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
+              </span>
             </div>
           </Link>
-        ))}
+        ))
+        )}
       </div>
     </div>
   );

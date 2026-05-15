@@ -1,5 +1,6 @@
-import { useMockData } from '../../hooks/useMockData';
+import { useState, useEffect } from 'react';
 import { useSandboxTasks } from '../../hooks/useSandboxTasks';
+import { getJobs, getCompanies } from '../../services/api';
 import type { Job, Company } from '../../types';
 import HeroSection from '../../components/Home/HeroSection';
 import PremiumJobsList from '../../components/Home/PremiumJobsList';
@@ -8,12 +9,15 @@ import CvAuditWidget from '../../components/Home/CvAuditWidget';
 import TopCompaniesWidget from '../../components/Home/TopCompaniesWidget';
 
 export default function HomePage() {
-  const homeData = useMockData<{ jobs: Job[], companies: Company[] }>('HomeMockData.json', { jobs: [], companies: [] });
+  const [jobs, setJobs] = useState<Job[]>([]);
+  const [companies, setCompanies] = useState<Company[]>([]);
   const tasks = useSandboxTasks();
 
-  const jobs = homeData.jobs || [];
-  const companies = homeData.companies || [];
-  
+  useEffect(() => {
+    getJobs().then(setJobs).catch(() => setJobs([]));
+    getCompanies().then(setCompanies).catch(() => setCompanies([]));
+  }, []);
+
   const featuredJobs = jobs.slice(0, 4);
 
   return (
@@ -26,7 +30,7 @@ export default function HomePage() {
 
       {/* ─── Основной контент (Грид) ────────────────────────────── */}
       <div className="grid lg:grid-cols-3 gap-6">
-        
+
         {/* Левая колонка (Вакансии) */}
         <PremiumJobsList jobs={featuredJobs} />
 

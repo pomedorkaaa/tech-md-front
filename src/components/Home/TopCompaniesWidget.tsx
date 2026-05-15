@@ -19,23 +19,33 @@ export default function TopCompaniesWidget({ companies }: TopCompaniesWidgetProp
       </div>
 
       <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
-        {companies.map(company => (
-          <Link
-            key={company.id}
-            to={`/jobs?company=${company.name}`}
-            className="group relative bg-charcoal rounded-2xl p-5 border border-border transition-all hover:border-primary/30 hover:bg-charcoal-light shadow-md text-center block"
-          >
-            <div className="text-3xl mb-3">{company.logo}</div>
-            <h3 className="font-bold text-[13px] text-text-primary group-hover:text-primary transition-colors">
-              {company.name}
-            </h3>
-            <p className="text-[11px] text-text-muted mt-1">{company.openPositions} {t('home.vacancies')}</p>
-            <div className="flex items-center justify-center gap-1 mt-2">
-              <span className="text-[10px] text-warning">★</span>
-              <span className="text-[11px] font-bold text-text-secondary">{company.rating}</span>
-            </div>
-          </Link>
-        ))}
+        {companies.length === 0 ? (
+          <div className="col-span-2 md:col-span-5 text-center text-sm text-text-muted py-6">
+            Пока нет компаний
+          </div>
+        ) : (
+          companies.map(company => (
+            <Link
+              key={company.id}
+              to={`/jobs?company=${company.name}`}
+              className="group relative bg-charcoal rounded-2xl p-5 border border-border transition-all hover:border-primary/30 hover:bg-charcoal-light shadow-md text-center block"
+            >
+              <div className="text-3xl mb-3">{company.logo || '🏢'}</div>
+              <h3 className="font-bold text-[13px] text-text-primary group-hover:text-primary transition-colors">
+                {company.name}
+              </h3>
+              {company.openPositions != null && (
+                <p className="text-[11px] text-text-muted mt-1">{company.openPositions} {t('home.vacancies')}</p>
+              )}
+              {company.rating != null && (
+                <div className="flex items-center justify-center gap-1 mt-2">
+                  <span className="text-[10px] text-warning">★</span>
+                  <span className="text-[11px] font-bold text-text-secondary">{company.rating}</span>
+                </div>
+              )}
+            </Link>
+          ))
+        )}
       </div>
     </div>
   );
