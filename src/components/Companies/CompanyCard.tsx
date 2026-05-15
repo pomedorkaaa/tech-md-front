@@ -14,7 +14,7 @@ export default function CompanyCard({ company }: CompanyCardProps) {
     <div className="group bg-charcoal rounded-2xl p-5 border border-border hover:border-primary/40 transition-all duration-300 hover:shadow-xl hover:shadow-primary/5 flex flex-col h-full">
       <div className="flex items-start gap-4 mb-4">
         <div className="w-16 h-16 rounded-xl bg-surface-elevated flex items-center justify-center text-3xl shrink-0 border border-border group-hover:border-primary/20 transition-colors">
-          {company.logo}
+          {company.logo || '🏢'}
         </div>
         <div className="flex-1 min-w-0">
           <Link to={`/companies/${company.id}`} className="font-bold text-lg text-text-primary group-hover:text-primary transition-colors truncate block">

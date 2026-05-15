@@ -40,12 +40,12 @@ export default function CompanyOverviewPage() {
   }
 
   return (
-    <div className="max-w-7xl mx-auto space-y-6">
-      <CompanyHeader company={company as any} />
+    <div className="max-w-7xl mx-auto space-y-6 px-4 sm:px-6 lg:px-8 py-8">
+      <CompanyHeader company={company} />
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <CompanyJobsList jobs={companyJobs} />
-        <CompanyDetailsWidget company={company as any} />
+        <CompanyDetailsWidget company={company} />
       </div>
     </div>
   );
