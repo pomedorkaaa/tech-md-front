@@ -21,6 +21,9 @@ import UserProfilePage from './pages/UserProfile/UserProfilePage';
 import SettingsPage from './pages/Settings/SettingsPage';
 import NotificationsPage from './pages/Notifications/NotificationsPage';
 import ProtectedRoute from './components/Auth/ProtectedRoute';
+import ManageJobsPage from './pages/EmployerDashboard/ManageJobsPage';
+import ManageCompaniesPage from './pages/EmployerDashboard/ManageCompaniesPage';
+import ManageTasksPage from './pages/EmployerDashboard/ManageTasksPage';
 import AboutPage from './pages/Static/AboutPage';
 import SupportPage from './pages/Static/SupportPage';
 import BlogPage from './pages/Static/BlogPage';
@@ -69,10 +72,13 @@ export default function App() {
           {/* Маршруты для работодателей */}
           <Route element={<ProtectedRoute allowedRoles={['employer', 'admin']} />}>
             <Route path="/employer" element={<EmployerDashboard />} />
-            <Route path="/employer/companies/new" element={<CreateCompanyPage />} />
+            <Route path="/employer/jobs" element={<ManageJobsPage />} />
             <Route path="/employer/jobs/new" element={<CreateJobPage />} />
-            <Route path="/employer/tests/:id" element={<TestResultDetailsPage />} />
+            <Route path="/employer/companies" element={<ManageCompaniesPage />} />
+            <Route path="/employer/companies/new" element={<CreateCompanyPage />} />
+            <Route path="/employer/tasks" element={<ManageTasksPage />} />
             <Route path="/employer/tasks/new" element={<CreateTaskPage />} />
+            <Route path="/employer/tests/:id" element={<TestResultDetailsPage />} />
             <Route path="/employer/solutions/:id" element={<SolutionViewPage />} />
           </Route>
 

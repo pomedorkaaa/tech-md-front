@@ -18,7 +18,7 @@ interface Task {
   id: string;
   title: string;
   description: string;
-  difficulty: string;
+  difficulty: 'Easy' | 'Medium' | 'Hard';
   category: string;
   tags: string[];
   companyName?: string;
@@ -47,6 +47,7 @@ export function useSandboxTasks(): Task[] {
 
       return {
         ...baseTask,
+        difficulty: baseTask.difficulty as 'Easy' | 'Medium' | 'Hard',
         title: taskTranslation.title,
         description: taskTranslation.description,
         category: taskTranslation.category,
