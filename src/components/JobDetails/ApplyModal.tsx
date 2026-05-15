@@ -8,6 +8,8 @@ interface ApplyModalProps {
   coverLetter: string;
   onCoverLetterChange: (value: string) => void;
   onSubmit: (e: React.FormEvent) => void;
+  submitting?: boolean;
+  error?: string;
 }
 
 export default function ApplyModal({
@@ -16,7 +18,9 @@ export default function ApplyModal({
   onClose,
   coverLetter,
   onCoverLetterChange,
-  onSubmit
+  onSubmit,
+  submitting = false,
+  error = '',
 }: ApplyModalProps) {
   const { t } = useTranslation();
 
@@ -30,6 +34,9 @@ export default function ApplyModal({
           <p className="text-sm text-text-secondary mt-1">{job.title} в {job.company.name}</p>
         </div>
         <form onSubmit={onSubmit} className="p-6 space-y-6">
+          {error && (
+            <div className="bg-error/10 border border-error/30 rounded-lg p-3 text-error text-sm">{error}</div>
+          )}
           <div className="space-y-2">
             <label className="text-sm font-bold text-text-primary">{t('job_details.cover_letter')}</label>
             <textarea
@@ -46,15 +53,17 @@ export default function ApplyModal({
             <button
               type="button"
               onClick={onClose}
-              className="flex-1 px-4 py-3 rounded-xl border border-border text-text-secondary font-bold hover:bg-surface-elevated transition-colors"
+              disabled={submitting}
+              className="flex-1 px-4 py-3 rounded-xl border border-border text-text-secondary font-bold hover:bg-surface-elevated transition-colors disabled:opacity-60"
             >
               {t('job_details.cancel')}
             </button>
             <button
               type="submit"
-              className="flex-1 px-4 py-3 rounded-xl bg-primary text-white font-bold hover:bg-primary-dark transition-colors shadow-md shadow-primary/20"
+              disabled={submitting}
+              className="flex-1 px-4 py-3 rounded-xl bg-primary text-white font-bold hover:bg-primary-dark transition-colors shadow-md shadow-primary/20 disabled:opacity-60"
             >
-              {t('job_details.send_application')}
+              {submitting ? '...' : t('job_details.send_application')}
             </button>
           </div>
         </form>

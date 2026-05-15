@@ -17,7 +17,7 @@ export default function JobHeader({ job, onApplyClick }: JobHeaderProps) {
     <div className="gradient-card rounded-xl p-6 border border-border">
       <div className="flex items-start gap-4 mb-4">
         <div className="w-16 h-16 rounded-xl bg-surface-elevated flex items-center justify-center text-3xl shrink-0">
-          {job.company.logo}
+          {job.company.logo || '🏢'}
         </div>
         <div className="flex-1">
           <h1 className="text-2xl font-bold text-text-primary mb-1">{job.title}</h1>
