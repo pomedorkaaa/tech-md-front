@@ -1,13 +1,28 @@
+import { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { ArrowLeft, CheckCircle, XCircle, Clock, Code } from 'lucide-react';
-import mockData from './EmployerMockData.json';
 import type { TestResult } from '../../types';
-
-const { testResults } = mockData as { testResults: TestResult[] };
+import { getTestResultById } from '../../services/api';
 
 export default function TestResultDetailsPage() {
   const { id } = useParams();
-  const result = testResults.find(r => r.id === id);
+  const [result, setResult] = useState<TestResult | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (!id) return;
+    let mounted = true;
+    setLoading(true);
+    getTestResultById(id)
+      .then(r => { if (mounted) setResult(r ?? null); })
+      .catch(() => { if (mounted) setResult(null); })
+      .finally(() => { if (mounted) setLoading(false); });
+    return () => { mounted = false; };
+  }, [id]);
+
+  if (loading) {
+    return <div className="p-8 text-center text-text-muted">Загрузка...</div>;
+  }
 
   if (!result) {
     return (
@@ -30,14 +45,14 @@ export default function TestResultDetailsPage() {
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
           <div className="flex items-center gap-4">
             <div className="w-16 h-16 rounded-full bg-primary/20 flex items-center justify-center text-primary text-2xl font-bold border border-primary/30">
-              {result.candidateName.split(' ').map(n => n[0]).join('')}
+              {result.candidateName ? result.candidateName.split(' ').map(n => n[0]).join('') : '?'}
             </div>
             <div>
-              <h1 className="text-2xl font-black text-text-primary mb-1">{result.candidateName}</h1>
+              <h1 className="text-2xl font-black text-text-primary mb-1">{result.candidateName || 'Кандидат'}</h1>
               <p className="text-text-secondary">{result.candidateRole}</p>
             </div>
           </div>
-          
+
           <div className="flex gap-4">
             <div className="bg-surface-elevated border border-border rounded-xl px-6 py-4 text-center">
               <p className="text-xs text-text-muted font-bold uppercase tracking-wider mb-1">Скор</p>
@@ -93,11 +108,14 @@ export default function TestResultDetailsPage() {
           </div>
         </div>
       </div>
-      
+
       <div className="mt-8 flex justify-end gap-4">
-         <button className="px-6 py-3 border border-border text-text-secondary font-bold text-sm rounded-lg hover:bg-surface-elevated transition-colors">
+         <Link
+           to="/chat"
+           className="px-6 py-3 border border-border text-text-secondary font-bold text-sm rounded-lg hover:bg-surface-elevated transition-colors inline-flex items-center"
+         >
             Связаться с кандидатом
-         </button>
+         </Link>
       </div>
     </div>
   );

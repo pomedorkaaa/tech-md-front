@@ -1,30 +1,51 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Briefcase, MapPin, DollarSign, FileText, Code, CheckCircle, ArrowLeft, Target } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
+import type { Company, Job } from '../../types';
+import { createJob, getCompanies } from '../../services/api';
 
 export default function CreateJobPage() {
   const navigate = useNavigate();
+  const [companies, setCompanies] = useState<Company[]>([]);
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState('');
+
   const [formData, setFormData] = useState({
     title: '',
     location: '',
     salaryMin: '',
     salaryMax: '',
     currency: 'MDL',
-    type: 'full-time',
+    type: 'full-time' as Job['type'],
     experience: 'Middle',
     description: '',
     requirements: '',
     techStack: '',
+    benefits: '',
+    companyId: '',
+    isHot: false,
   });
 
   const [hasTestTask, setHasTestTask] = useState(false);
   const [testTaskData, setTestTaskData] = useState({
-    type: 'algorithm',
+    type: 'algorithm' as NonNullable<Job['testTask']>['type'],
     title: '',
     description: '',
-    difficulty: 'Medium',
+    difficulty: 'Medium' as NonNullable<Job['testTask']>['difficulty'],
     timeLimit: '60',
   });
+
+  useEffect(() => {
+    getCompanies()
+      .then(list => {
+        setCompanies(list);
+        if (list.length && !formData.companyId) {
+          setFormData(prev => ({ ...prev, companyId: list[0].id }));
+        }
+      })
+      .catch(() => setCompanies([]));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -34,11 +55,47 @@ export default function CreateJobPage() {
     setTestTaskData({ ...testTaskData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // В будущем здесь будет вызов API (POST /api/jobs)
-    alert('Вакансия успешно создана!');
-    navigate('/employer');
+    setError('');
+    if (!formData.companyId) {
+      setError('Сначала выберите компанию (или создайте её, если её ещё нет в системе).');
+      return;
+    }
+    setSubmitting(true);
+    try {
+      await createJob({
+        title: formData.title,
+        companyId: Number(formData.companyId),
+        location: formData.location,
+        salary: {
+          min: Number(formData.salaryMin || 0),
+          max: Number(formData.salaryMax || 0),
+          currency: formData.currency,
+        },
+        experience: formData.experience,
+        type: formData.type,
+        description: formData.description,
+        requirements: formData.requirements.split(/[\n,]+/).map(s => s.trim()).filter(Boolean),
+        benefits: formData.benefits.split(/[\n,]+/).map(s => s.trim()).filter(Boolean),
+        techStack: formData.techStack.split(/[\n,]+/).map(s => s.trim()).filter(Boolean),
+        isHot: formData.isHot,
+        testTask: hasTestTask
+          ? {
+            type: testTaskData.type,
+            title: testTaskData.title,
+            description: testTaskData.description,
+            difficulty: testTaskData.difficulty,
+            timeLimit: testTaskData.timeLimit ? Number(testTaskData.timeLimit) : undefined,
+          }
+          : undefined,
+      });
+      navigate('/employer');
+    } catch (err: any) {
+      setError(err?.message || 'Не удалось создать вакансию');
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -53,7 +110,10 @@ export default function CreateJobPage() {
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-8">
-        
+        {error && (
+          <div className="bg-error/10 border border-error/30 rounded-lg p-3 text-error text-sm">{error}</div>
+        )}
+
         {/* Основная информация */}
         <div className="gradient-card rounded-2xl p-6 sm:p-8 border border-border">
           <h2 className="text-xl font-bold text-text-primary mb-6 pb-2 border-b border-border">Основная информация</h2>
@@ -71,6 +131,24 @@ export default function CreateJobPage() {
                 className="w-full bg-surface-elevated border border-border rounded-lg px-4 py-3 text-sm text-text-primary focus:ring-2 focus:ring-primary focus:outline-none transition-all"
                 placeholder="Например, Senior Frontend Developer"
               />
+            </div>
+
+            <div className="space-y-2">
+              <label className="text-xs font-bold text-text-secondary uppercase tracking-wider flex items-center gap-2">
+                Компания <span className="text-error">*</span>
+              </label>
+              <select
+                name="companyId"
+                required
+                value={formData.companyId}
+                onChange={handleChange}
+                className="w-full bg-surface-elevated border border-border rounded-lg px-4 py-3 text-sm text-text-primary focus:ring-2 focus:ring-primary focus:outline-none transition-all"
+              >
+                <option value="">— Выберите компанию —</option>
+                {companies.map(c => (
+                  <option key={c.id} value={c.id}>{c.name}</option>
+                ))}
+              </select>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -103,6 +181,8 @@ export default function CreateJobPage() {
                   <option value="part-time">Part-time</option>
                   <option value="remote">Remote</option>
                   <option value="hybrid">Hybrid</option>
+                  <option value="contract">Contract</option>
+                  <option value="internship">Internship</option>
                 </select>
               </div>
             </div>
@@ -165,7 +245,7 @@ export default function CreateJobPage() {
 
             <div className="space-y-2">
               <label className="text-xs font-bold text-text-secondary uppercase tracking-wider flex items-center gap-2">
-                <CheckCircle size={14} /> Требования (через запятую)
+                <CheckCircle size={14} /> Требования (через запятую или с новой строки)
               </label>
               <textarea
                 name="requirements"
@@ -175,6 +255,20 @@ export default function CreateJobPage() {
                 onChange={handleChange}
                 className="w-full bg-surface-elevated border border-border rounded-lg px-4 py-3 text-sm text-text-primary focus:ring-2 focus:ring-primary focus:outline-none transition-all resize-none"
                 placeholder="3+ года опыта, знание React..."
+              />
+            </div>
+
+            <div className="space-y-2">
+              <label className="text-xs font-bold text-text-secondary uppercase tracking-wider flex items-center gap-2">
+                Бонусы (через запятую или с новой строки)
+              </label>
+              <textarea
+                name="benefits"
+                rows={3}
+                value={formData.benefits}
+                onChange={handleChange}
+                className="w-full bg-surface-elevated border border-border rounded-lg px-4 py-3 text-sm text-text-primary focus:ring-2 focus:ring-primary focus:outline-none transition-all resize-none"
+                placeholder="Удалённая работа, медстраховка, бонусы..."
               />
             </div>
 
@@ -294,15 +388,17 @@ export default function CreateJobPage() {
           <button
             type="button"
             onClick={() => navigate('/employer')}
-            className="px-6 py-3 border border-border text-text-secondary font-bold text-sm rounded-lg hover:bg-surface-elevated transition-colors"
+            disabled={submitting}
+            className="px-6 py-3 border border-border text-text-secondary font-bold text-sm rounded-lg hover:bg-surface-elevated transition-colors disabled:opacity-60"
           >
             Отмена
           </button>
           <button
             type="submit"
-            className="px-8 py-3 bg-primary text-white font-bold text-sm rounded-lg hover:bg-primary-dark transition-colors shadow-md shadow-primary/20"
+            disabled={submitting}
+            className="px-8 py-3 bg-primary text-white font-bold text-sm rounded-lg hover:bg-primary-dark transition-colors shadow-md shadow-primary/20 disabled:opacity-60"
           >
-            Опубликовать вакансию
+            {submitting ? 'Публикация...' : 'Опубликовать вакансию'}
           </button>
         </div>
       </form>

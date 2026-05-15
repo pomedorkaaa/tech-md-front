@@ -1,26 +1,50 @@
 import { useState } from 'react';
 import { Building2, MapPin, Globe, FileText, ArrowLeft, Image as ImageIcon } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
+import { createCompany } from '../../services/api';
 
 export default function CreateCompanyPage() {
   const navigate = useNavigate();
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState('');
   const [formData, setFormData] = useState({
     name: '',
     logo: '',
     description: '',
     location: '',
     website: '',
+    techStack: '',
+    employeesCount: '',
+    rating: '',
   });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // В будущем здесь будет вызов API (POST /api/companies)
-    alert('Компания успешно создана!');
-    navigate('/employer');
+    setError('');
+    setSubmitting(true);
+    try {
+      await createCompany({
+        name: formData.name,
+        logo: formData.logo || undefined,
+        description: formData.description || undefined,
+        location: formData.location,
+        website: formData.website || undefined,
+        techStack: formData.techStack || undefined,
+        stats: {
+          employeesCount: formData.employeesCount || undefined,
+          rating: formData.rating ? Number(formData.rating) : undefined,
+        },
+      });
+      navigate('/employer');
+    } catch (err: any) {
+      setError(err?.message || 'Не удалось создать компанию');
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -36,6 +60,10 @@ export default function CreateCompanyPage() {
 
       <div className="gradient-card rounded-2xl p-6 sm:p-8 border border-border">
         <form onSubmit={handleSubmit} className="space-y-6">
+          {error && (
+            <div className="bg-error/10 border border-error/30 rounded-lg p-3 text-error text-sm">{error}</div>
+          )}
+
           <div className="space-y-2">
             <label className="text-xs font-bold text-text-secondary uppercase tracking-wider flex items-center gap-2">
               <Building2 size={14} /> Название компании <span className="text-error">*</span>
@@ -53,25 +81,24 @@ export default function CreateCompanyPage() {
 
           <div className="space-y-2">
             <label className="text-xs font-bold text-text-secondary uppercase tracking-wider flex items-center gap-2">
-              <ImageIcon size={14} /> Логотип (URL)
+              <ImageIcon size={14} /> Логотип (URL или эмодзи)
             </label>
             <input
-              type="url"
+              type="text"
               name="logo"
               value={formData.logo}
               onChange={handleChange}
               className="w-full bg-surface-elevated border border-border rounded-lg px-4 py-3 text-sm text-text-primary focus:ring-2 focus:ring-primary focus:outline-none transition-all"
-              placeholder="https://example.com/logo.png"
+              placeholder="🚀 или https://example.com/logo.png"
             />
           </div>
 
           <div className="space-y-2">
             <label className="text-xs font-bold text-text-secondary uppercase tracking-wider flex items-center gap-2">
-              <FileText size={14} /> Описание компании <span className="text-error">*</span>
+              <FileText size={14} /> Описание компании
             </label>
             <textarea
               name="description"
-              required
               rows={4}
               value={formData.description}
               onChange={handleChange}
@@ -83,11 +110,12 @@ export default function CreateCompanyPage() {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
             <div className="space-y-2">
               <label className="text-xs font-bold text-text-secondary uppercase tracking-wider flex items-center gap-2">
-                <MapPin size={14} /> Локация (Штаб-квартира)
+                <MapPin size={14} /> Локация (Штаб-квартира) <span className="text-error">*</span>
               </label>
               <input
                 type="text"
                 name="location"
+                required
                 value={formData.location}
                 onChange={handleChange}
                 className="w-full bg-surface-elevated border border-border rounded-lg px-4 py-3 text-sm text-text-primary focus:ring-2 focus:ring-primary focus:outline-none transition-all"
@@ -110,12 +138,54 @@ export default function CreateCompanyPage() {
             </div>
           </div>
 
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+            <div className="space-y-2">
+              <label className="text-xs font-bold text-text-secondary uppercase tracking-wider">Кол-во сотрудников</label>
+              <input
+                type="text"
+                name="employeesCount"
+                value={formData.employeesCount}
+                onChange={handleChange}
+                className="w-full bg-surface-elevated border border-border rounded-lg px-4 py-3 text-sm text-text-primary focus:ring-2 focus:ring-primary focus:outline-none transition-all"
+                placeholder="Например, 50-100"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <label className="text-xs font-bold text-text-secondary uppercase tracking-wider">Рейтинг</label>
+              <input
+                type="number"
+                step="0.1"
+                min="0"
+                max="5"
+                name="rating"
+                value={formData.rating}
+                onChange={handleChange}
+                className="w-full bg-surface-elevated border border-border rounded-lg px-4 py-3 text-sm text-text-primary focus:ring-2 focus:ring-primary focus:outline-none transition-all"
+                placeholder="4.5"
+              />
+            </div>
+          </div>
+
+          <div className="space-y-2">
+            <label className="text-xs font-bold text-text-secondary uppercase tracking-wider">Технологии (через запятую)</label>
+            <input
+              type="text"
+              name="techStack"
+              value={formData.techStack}
+              onChange={handleChange}
+              className="w-full bg-surface-elevated border border-border rounded-lg px-4 py-3 text-sm text-text-primary focus:ring-2 focus:ring-primary focus:outline-none transition-all"
+              placeholder="React, Node.js, AWS"
+            />
+          </div>
+
           <div className="pt-6 border-t border-border flex justify-end">
             <button
               type="submit"
-              className="px-8 py-3 bg-primary text-white font-bold text-sm rounded-lg hover:bg-primary-dark transition-colors shadow-md shadow-primary/20"
+              disabled={submitting}
+              className="px-8 py-3 bg-primary text-white font-bold text-sm rounded-lg hover:bg-primary-dark transition-colors shadow-md shadow-primary/20 disabled:opacity-60"
             >
-              Зарегистрировать компанию
+              {submitting ? 'Создание...' : 'Зарегистрировать компанию'}
             </button>
           </div>
         </form>
