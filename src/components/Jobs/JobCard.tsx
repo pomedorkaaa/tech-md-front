@@ -26,7 +26,7 @@ export default function JobCard({ job }: JobCardProps) {
       <div className="flex items-start justify-between mb-3">
         <div className="flex items-start gap-4">
           <div className="w-12 h-12 rounded-xl bg-surface-elevated flex items-center justify-center text-2xl shrink-0">
-            {job.company.logo}
+            {job.company.logo || '🏢'}
           </div>
           <div>
             <div className="flex items-center gap-2">

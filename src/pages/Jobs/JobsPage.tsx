@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { getJobs } from '../../services/api';
@@ -7,8 +7,6 @@ import type { Job } from '../../types';
 import JobSearchHeader from '../../components/Jobs/JobSearchHeader';
 import JobsFiltersSidebar from '../../components/Jobs/JobsFiltersSidebar';
 import JobCard from '../../components/Jobs/JobCard';
-
-const techFilters = ['React', 'Python', 'Java', 'Go', '.NET', 'Swift', 'TypeScript'];
 
 export default function JobsPage() {
   const [searchParams] = useSearchParams();
@@ -19,7 +17,30 @@ export default function JobsPage() {
     getJobs().then(setJobs).catch(() => setJobs([]));
   }, []);
 
-  const experienceFilters = [t('jobs.any'), t('jobs.0_1_exp', '0-1 год'), t('jobs.1_3_exp'), t('jobs.3_5_exp', '3-5 лет'), t('jobs.5_exp', '5+ лет')];
+  // Top-15 технологий из всех имеющихся вакансий, иначе — дефолт.
+  const techFilters = useMemo(() => {
+    if (jobs.length === 0) {
+      return ['React', 'Python', 'Java', 'Go', '.NET', 'Swift', 'TypeScript'];
+    }
+    const counts = new Map<string, number>();
+    for (const j of jobs) {
+      for (const tech of j.techStack) {
+        counts.set(tech, (counts.get(tech) ?? 0) + 1);
+      }
+    }
+    return Array.from(counts.entries())
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 15)
+      .map(([tech]) => tech);
+  }, [jobs]);
+
+  const experienceFilters = [
+    t('jobs.any'),
+    t('jobs.0_1_exp', '0-1 год'),
+    t('jobs.1_3_exp'),
+    t('jobs.3_5_exp', '3-5 лет'),
+    t('jobs.5_exp', '5+ лет'),
+  ];
 
   const [filterState, setFilterState] = useState({
     searchQuery: '',
@@ -53,11 +74,14 @@ export default function JobsPage() {
       .catch(err => console.error('Failed to fetch exchange rates', err));
   }, []);
 
-  // Read ?company= from URL on mount
+  // Read ?company= or ?q= from URL on mount
   useEffect(() => {
     const companyParam = searchParams.get('company');
+    const qParam = searchParams.get('q');
     if (companyParam) {
       setFilterState(prev => ({ ...prev, searchQuery: companyParam }));
+    } else if (qParam) {
+      setFilterState(prev => ({ ...prev, searchQuery: qParam }));
     }
   }, [searchParams]);
 
