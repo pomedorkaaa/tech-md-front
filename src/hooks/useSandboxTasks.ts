@@ -1,60 +1,35 @@
-import { useMemo } from 'react';
-import { useTranslation } from 'react-i18next';
-import tasksBase from '../pages/Sandbox/SandboxTasksBase.json';
+import { useEffect, useState } from 'react';
+import type { Task } from '../types';
+import { getTasks } from '../services/api';
 
-interface Example {
-  input: string;
-  output: string;
-  explanation?: string;
+interface ParsedTask extends Task {
+  testCases?: { args: unknown[]; expected: unknown; label?: string }[];
+  defaultCode?: string;
+  functionName?: string;
 }
 
-interface TestCase {
-  args: unknown[];
-  expected: unknown;
-  label: string;
-}
+/**
+ * Loads sandbox challenges from the backend.
+ * Tasks are stored in English in the database to keep payloads small;
+ * UI chrome remains localized via i18n keys.
+ */
+export function useSandboxTasks(): ParsedTask[] {
+  const [tasks, setTasks] = useState<ParsedTask[]>([]);
 
-interface Task {
-  id: string;
-  title: string;
-  description: string;
-  difficulty: 'Easy' | 'Medium' | 'Hard';
-  category: string;
-  tags: string[];
-  companyName?: string;
-  position?: string;
-  examples: Example[];
-  constraints: string[];
-  solvedCount: number;
-  functionName: string;
-  defaultCode: string;
-  testCases: TestCase[];
-}
+  useEffect(() => {
+    let cancelled = false;
+    getTasks()
+      .then((list) => {
+        if (cancelled) return;
+        setTasks(list.map((t) => ({ ...t })));
+      })
+      .catch(() => {
+        if (!cancelled) setTasks([]);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
-export function useSandboxTasks(): Task[] {
-  const { t } = useTranslation();
-
-  return useMemo(() => {
-    return tasksBase.tasks.map((baseTask) => {
-      const taskTranslation = t(`sandbox.tasks.${baseTask.id}`, { returnObjects: true }) as {
-        title: string;
-        description: string;
-        category: string;
-        defaultCode: string;
-        examples: Example[];
-        constraints: string[];
-      };
-
-      return {
-        ...baseTask,
-        difficulty: baseTask.difficulty as 'Easy' | 'Medium' | 'Hard',
-        title: taskTranslation.title,
-        description: taskTranslation.description,
-        category: taskTranslation.category,
-        defaultCode: taskTranslation.defaultCode,
-        examples: taskTranslation.examples,
-        constraints: taskTranslation.constraints,
-      } as Task;
-    });
-  }, [t]);
+  return tasks;
 }

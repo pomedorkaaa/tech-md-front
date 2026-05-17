@@ -1,10 +1,9 @@
 import { useState, useRef, useCallback, useEffect, Suspense, lazy } from 'react';
 import { Play, RotateCcw, ChevronRight, ChevronDown, Building2, GripVertical, GripHorizontal, Users, CheckCircle2, XCircle, Send } from 'lucide-react';
 import type { Task } from '@/types';
-import mockData from './SandboxMockData.json';
+import { useSandboxTasks } from '../../hooks/useSandboxTasks';
 
 const CodeEditor = lazy(() => import('@uiw/react-textarea-code-editor'));
-const { tasks } = mockData as { tasks: Task[] };
 
 type MobileTab = 'task' | 'code' | 'output';
 
@@ -51,14 +50,23 @@ const DIFF_STYLES: Record<string, string> = {
 };
 
 export default function SandboxPage() {
-  const [selectedTask, setSelectedTask] = useState<Task>(tasks[0]);
-  const [code, setCode] = useState(tasks[0].defaultCode ?? '');
+  const tasks = useSandboxTasks();
+  const [selectedTask, setSelectedTask] = useState<Task | null>(null);
+  const [code, setCode] = useState('');
   const [testResults, setTestResults] = useState<TestResult[]>([]);
   const [summary, setSummary] = useState('');
   const [isRunning, setIsRunning] = useState(false);
   const [mobileTab, setMobileTab] = useState<MobileTab>('task');
   const [taskListOpen, setTaskListOpen] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
+
+  // Pick the first task once the list arrives.
+  useEffect(() => {
+    if (!selectedTask && tasks.length > 0) {
+      setSelectedTask(tasks[0]);
+      setCode(tasks[0].defaultCode ?? '');
+    }
+  }, [tasks, selectedTask]);
 
   // ─── Resize state ────────────────────────────────────
   const [panelWidth, setPanelWidth] = useState(380);
@@ -108,6 +116,7 @@ export default function SandboxPage() {
   };
 
   const handleRun = () => {
+    if (!selectedTask) return;
     setIsRunning(true);
     setTimeout(() => {
       const { results, summary: s } = runTestCases(code, selectedTask);
@@ -119,6 +128,7 @@ export default function SandboxPage() {
   };
 
   const handleClear = () => {
+    if (!selectedTask) return;
     setCode(selectedTask.defaultCode ?? '');
     setTestResults([]);
     setSummary('');
@@ -137,35 +147,39 @@ export default function SandboxPage() {
   };
 
   // ─── Shared components ───────────────────────────────
+  // selectedTask is guaranteed non-null when these render helpers are invoked:
+  // the early-return at the bottom of the component renders a loader until
+  // we have a task.
+  const task = selectedTask as Task;
   const renderTaskDescription = (compact = false) => (
     <div className={`space-y-${compact ? '4' : '5'}`}>
       <div>
         <div className="flex items-start gap-3 mb-3">
-          <h1 className={`${compact ? 'text-lg' : 'text-xl'} font-black text-text-primary flex-1`}>{selectedTask.title}</h1>
-          <span className={`px-2.5 py-1 text-[10px] font-black uppercase tracking-wider rounded-lg border shrink-0 ${DIFF_STYLES[selectedTask.difficulty] ?? ''}`}>
-            {selectedTask.difficulty}
+          <h1 className={`${compact ? 'text-lg' : 'text-xl'} font-black text-text-primary flex-1`}>{task.title}</h1>
+          <span className={`px-2.5 py-1 text-[10px] font-black uppercase tracking-wider rounded-lg border shrink-0 ${DIFF_STYLES[task.difficulty] ?? ''}`}>
+            {task.difficulty}
           </span>
         </div>
-        {selectedTask.companyName && (
+        {task.companyName && (
           <div className={`flex items-center gap-${compact ? '3' : '4'} px-${compact ? '3' : '4'} py-${compact ? '2.5' : '3'} rounded-xl bg-surface-elevated border border-border mb-4`}>
             <div className={`w-${compact ? '8' : '9'} h-${compact ? '8' : '9'} rounded-lg bg-primary/15 flex items-center justify-center shrink-0`}>
               <Building2 size={compact ? 14 : 16} className="text-primary" />
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-bold text-text-primary">{selectedTask.companyName}</p>
+              <p className="text-sm font-bold text-text-primary">{task.companyName}</p>
               <p className="text-xs text-text-secondary flex items-center gap-1.5 mt-0.5">
-                <Users size={11} /> {selectedTask.position}
+                <Users size={11} /> {task.position}
               </p>
             </div>
           </div>
         )}
       </div>
-      <p className="text-sm text-text-secondary leading-relaxed whitespace-pre-line">{selectedTask.description}</p>
-      {selectedTask.examples.length > 0 && (
+      <p className="text-sm text-text-secondary leading-relaxed whitespace-pre-line">{task.description}</p>
+      {task.examples.length > 0 && (
         <div>
           <h3 className="text-xs font-black uppercase tracking-widest text-text-secondary mb-3">Примеры</h3>
           <div className="space-y-3">
-            {selectedTask.examples.map((ex, idx) => (
+            {task.examples.map((ex, idx) => (
               <div key={idx} className={`bg-surface-elevated rounded-xl p-${compact ? '3' : '4'} border border-border`}>
                 <div className="text-[10px] font-bold uppercase tracking-widest text-text-muted mb-1">Вход:</div>
                 <code className="text-sm text-primary font-mono break-all">{ex.input}</code>
@@ -177,11 +191,11 @@ export default function SandboxPage() {
           </div>
         </div>
       )}
-      {selectedTask.constraints.length > 0 && (
+      {task.constraints.length > 0 && (
         <div>
           <h3 className="text-xs font-black uppercase tracking-widest text-text-secondary mb-3">Ограничения</h3>
           <ul className="space-y-1.5">
-            {selectedTask.constraints.map((c, idx) => (
+            {task.constraints.map((c, idx) => (
               <li key={idx} className="flex items-start gap-2 text-sm text-text-secondary">
                 <span className="text-primary mt-1">•</span> {c}
               </li>
@@ -304,7 +318,7 @@ export default function SandboxPage() {
       {tasks.map(task => (
         <button key={task.id} onClick={() => selectTask(task)}
           className={`w-full flex items-start gap-3 p-3 ${compact ? '' : 'rounded-xl'} text-left transition-all ${
-            selectedTask.id === task.id
+            task.id === task.id
               ? `bg-primary/10 ${compact ? '' : 'border border-primary/20'}`
               : `hover:bg-surface-elevated ${compact ? '' : 'border border-transparent'}`
           }`}>
@@ -313,7 +327,7 @@ export default function SandboxPage() {
           }`} />
           <div className="flex-1 min-w-0">
             <div className="flex items-center justify-between gap-2">
-              <span className={`font-semibold text-sm truncate ${selectedTask.id === task.id ? 'text-primary' : 'text-text-primary'}`}>
+              <span className={`font-semibold text-sm truncate ${task.id === task.id ? 'text-primary' : 'text-text-primary'}`}>
                 {task.title}
               </span>
               {!compact && <ChevronRight size={14} className="text-text-muted shrink-0" />}
@@ -362,9 +376,9 @@ export default function SandboxPage() {
               className="flex items-center justify-between p-4 border-b border-border bg-charcoal shrink-0">
               <div className="flex items-center gap-2 min-w-0">
                 <span className={`w-2.5 h-2.5 rounded-full shrink-0 ${
-                  selectedTask.difficulty === 'Easy' ? 'bg-success' : selectedTask.difficulty === 'Medium' ? 'bg-warning' : 'bg-error'
+                  task.difficulty === 'Easy' ? 'bg-success' : task.difficulty === 'Medium' ? 'bg-warning' : 'bg-error'
                 }`} />
-                <span className="font-semibold text-sm text-text-primary truncate">{selectedTask.title}</span>
+                <span className="font-semibold text-sm text-text-primary truncate">{task.title}</span>
               </div>
               <ChevronDown size={16} className={`text-text-muted transition-transform shrink-0 ml-2 ${taskListOpen ? 'rotate-180' : ''}`} />
             </button>
@@ -460,8 +474,20 @@ export default function SandboxPage() {
 
   return (
     <>
-      {renderMobile()}
-      {renderDesktop()}
+      {!selectedTask ? (
+        <div className="flex items-center justify-center h-[calc(100vh-4rem)]">
+          <div className="text-text-muted text-sm flex items-center gap-3">
+            <div className="w-5 h-5 border-2 border-primary/30 border-t-primary rounded-full animate-spin" />
+            Загрузка задач...
+          </div>
+        </div>
+      ) : (
+        <>
+          {renderMobile()}
+          {renderDesktop()}
+        </>
+      )}
     </>
   );
 }
+
