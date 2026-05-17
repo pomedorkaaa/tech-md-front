@@ -5,7 +5,6 @@ import type { Job, Company } from '../../types';
 import HeroSection from '../../components/Home/HeroSection';
 import PremiumJobsList from '../../components/Home/PremiumJobsList';
 import DailyChallengeWidget from '../../components/Home/DailyChallengeWidget';
-import CvAuditWidget from '../../components/Home/CvAuditWidget';
 import TopCompaniesWidget from '../../components/Home/TopCompaniesWidget';
 
 export default function HomePage() {
@@ -37,7 +36,6 @@ export default function HomePage() {
         {/* Правая колонка (Задачи и сайдбар) */}
         <div className="space-y-6">
           <DailyChallengeWidget tasks={tasks} />
-          <CvAuditWidget />
         </div>
 
       </div>
