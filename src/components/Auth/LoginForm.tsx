@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
+import OAuthButtons from './OAuthButtons';
 
 export default function LoginForm() {
   const [formData, setFormData] = useState({
@@ -43,14 +44,14 @@ export default function LoginForm() {
             className="block font-sans text-xs font-bold uppercase tracking-widest text-text-secondary"
             htmlFor="username"
           >
-            Username
+            Username or Email
           </label>
           <div className="relative">
             <input
               className="w-full bg-charcoal-light border border-border rounded-lg py-3 px-4 text-text-primary placeholder:text-text-muted focus:ring-2 focus:ring-primary/50 transition-all outline-none"
               id="username"
               name="username"
-              placeholder="your_username"
+              placeholder="username or email@example.com"
               type="text"
               value={formData.username}
               onChange={handleChange}
@@ -67,6 +68,12 @@ export default function LoginForm() {
             >
               Password
             </label>
+            <Link
+              to="/forgot-password"
+              className="text-xs text-primary hover:text-blue-400 transition-colors"
+            >
+              Forgot password?
+            </Link>
           </div>
           <div className="relative">
             <input
@@ -86,9 +93,13 @@ export default function LoginForm() {
           className="w-full bg-gradient-to-br from-[#adc6ff] to-[#4d8eff] dark:from-[#4d8eff] dark:to-[#005ac2] text-white font-sans font-bold py-4 rounded-lg shadow-lg active:scale-[0.98] transition-all duration-200"
           type="submit"
         >
-          Войти
+          Sign in
         </button>
       </form>
+
+      <div className="mt-6 relative z-10">
+        <OAuthButtons />
+      </div>
 
       <p className="mt-8 text-center text-text-secondary text-sm relative z-10">
         Don't have an account?{' '}

@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { User, Briefcase, Mail, Lock, ShieldCheck, BadgeCheck } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
+import OAuthButtons from './OAuthButtons';
 
 export default function RegisterForm() {
   const [formData, setFormData] = useState({
@@ -39,7 +40,7 @@ export default function RegisterForm() {
       setError('Password must be at least 6 characters');
       return;
     }
-    
+
     try {
       await register(formData.username, formData.email, formData.password, formData.accountType);
       navigate('/');
@@ -52,7 +53,7 @@ export default function RegisterForm() {
     <div className="bg-charcoal rounded-xl shadow-2xl border border-border overflow-hidden">
       <div className="p-8 md:p-12">
         <h2 className="font-sans font-bold text-2xl text-text-primary mb-8">
-          Создать аккаунт
+          Create an account
         </h2>
 
         <form className="space-y-6" onSubmit={handleSubmit}>
@@ -65,7 +66,7 @@ export default function RegisterForm() {
           {/* Role Selection (Bento-style chips) */}
           <div className="space-y-3">
             <label className="font-sans text-[10px] font-bold uppercase tracking-[0.2em] text-text-muted ml-1">
-              Тип аккаунта
+              Account type
             </label>
             <div className="grid grid-cols-2 gap-3">
               <button
@@ -78,7 +79,7 @@ export default function RegisterForm() {
                 type="button"
               >
                 <User size={20} />
-                <span className="font-sans font-bold text-xs tracking-wider">КАНДИДАТ</span>
+                <span className="font-sans font-bold text-xs tracking-wider">CANDIDATE</span>
               </button>
 
               <button
@@ -91,7 +92,7 @@ export default function RegisterForm() {
                 type="button"
               >
                 <Briefcase size={20} />
-                <span className="font-sans font-bold text-xs tracking-wider">КОМПАНИЯ</span>
+                <span className="font-sans font-bold text-xs tracking-wider">EMPLOYER</span>
               </button>
             </div>
           </div>
@@ -127,7 +128,7 @@ export default function RegisterForm() {
                 className="font-sans text-[10px] font-bold uppercase tracking-[0.2em] text-text-muted ml-1 block mb-2"
                 htmlFor="email"
               >
-                Электронная почта
+                Email address
               </label>
               <div className="relative">
                 <input
@@ -152,7 +153,7 @@ export default function RegisterForm() {
                   className="font-sans text-[10px] font-bold uppercase tracking-[0.2em] text-text-muted ml-1 block mb-2"
                   htmlFor="password"
                 >
-                  Пароль
+                  Password
                 </label>
                 <div className="relative">
                   <input
@@ -176,7 +177,7 @@ export default function RegisterForm() {
                   className="font-sans text-[10px] font-bold uppercase tracking-[0.2em] text-text-muted ml-1 block mb-2"
                   htmlFor="password_confirm"
                 >
-                  Подтверждение
+                  Confirm password
                 </label>
                 <div className="relative">
                   <input
@@ -203,20 +204,24 @@ export default function RegisterForm() {
               className="w-full bg-gradient-to-br from-[#adc6ff] to-[#4d8eff] dark:from-[#4d8eff] dark:to-[#005ac2] text-white font-sans font-bold py-4 rounded-lg shadow-lg active:scale-[0.98] transition-all duration-200"
               type="submit"
             >
-              Создать аккаунт
+              Create account
             </button>
           </div>
         </form>
 
+        <div className="mt-6">
+          <OAuthButtons />
+        </div>
+
         {/* Footer Link */}
         <div className="mt-8 text-center">
           <p className="text-sm text-text-muted">
-            Уже есть аккаунт?
+            Already have an account?
             <Link
               to="/login"
               className="text-primary font-semibold hover:underline underline-offset-4 decoration-primary/30 transition-all ml-2"
             >
-              Войти
+              Sign in
             </Link>
           </p>
         </div>
