@@ -17,6 +17,9 @@ import TestResultDetailsPage from './pages/EmployerDashboard/TestResultDetailsPa
 import SolutionViewPage from './pages/SolutionView/SolutionViewPage';
 import LoginPage from './pages/Auth/LoginPage';
 import RegisterPage from './pages/Auth/RegisterPage';
+import OAuthCallbackPage from './pages/Auth/OAuthCallbackPage';
+import ForgotPasswordPage from './pages/Auth/ForgotPasswordPage';
+import ResetPasswordPage from './pages/Auth/ResetPasswordPage';
 import UserProfilePage from './pages/UserProfile/UserProfilePage';
 import SettingsPage from './pages/Settings/SettingsPage';
 import NotificationsPage from './pages/Notifications/NotificationsPage';
@@ -38,6 +41,9 @@ export default function App() {
         {/* Auth routes without global layout */}
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
+        <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+        <Route path="/reset-password" element={<ResetPasswordPage />} />
+        <Route path="/auth/callback/:provider" element={<OAuthCallbackPage />} />
 
         {/* Main app routes with global layout */}
         <Route element={<Layout />}>
