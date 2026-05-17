@@ -201,7 +201,21 @@ function mapTask(t: any): Task {
     constraints: parseStringArray(t.constraints),
     solvedCount: t.solvedCount ?? 0,
     language: t.language ?? undefined,
+    functionName: t.functionName ?? undefined,
+    defaultCode: t.defaultCode ?? undefined,
+    testCases: parseTestCases(t.testCases),
   };
+}
+
+function parseTestCases(raw: unknown): Task['testCases'] {
+  if (Array.isArray(raw)) return raw as Task['testCases'];
+  if (typeof raw !== 'string' || !raw.trim()) return [];
+  try {
+    const parsed = JSON.parse(raw);
+    return Array.isArray(parsed) ? parsed : [];
+  } catch {
+    return [];
+  }
 }
 
 // ─── Application ─────────────────────────────────────────
@@ -680,4 +694,39 @@ export async function changePassword(data: { currentPassword: string; newPasswor
 
 export async function deleteAccount(): Promise<void> {
   await fetchApi<void>('/user/me', { method: 'DELETE' });
+}
+
+export async function forgotPassword(email: string): Promise<{ message: string }> {
+  return fetchApi<{ message: string }>('/user/forgot-password', {
+    method: 'POST',
+    body: JSON.stringify({ email }),
+  });
+}
+
+export async function resetPassword(token: string, newPassword: string): Promise<{ message: string }> {
+  return fetchApi<{ message: string }>('/user/reset-password', {
+    method: 'POST',
+    body: JSON.stringify({ token, newPassword }),
+  });
+}
+
+// ─────────────────────────────────────────────────────────
+// API: OAuth (Google / GitHub)
+// ─────────────────────────────────────────────────────────
+
+export async function getOAuthUrl(provider: 'google' | 'github', state: string): Promise<string> {
+  const data = await fetchApi<{ url: string }>(
+    `/auth/${provider}/url?state=${encodeURIComponent(state)}`,
+  );
+  return data.url;
+}
+
+export async function oauthCallback(
+  provider: 'google' | 'github',
+  code: string,
+): Promise<AuthResponse> {
+  return fetchApi<AuthResponse>(`/auth/${provider}/callback`, {
+    method: 'POST',
+    body: JSON.stringify({ code }),
+  });
 }

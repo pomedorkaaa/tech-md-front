@@ -3,7 +3,7 @@ import type { User } from '../types';
 import {
   loginApi, registerApi, getMeApi,
   setStoredToken, clearStoredToken, getStoredToken,
-  mapAuthUser,
+  mapAuthUser, oauthCallback,
 } from '../services/api';
 
 interface AuthContextType {
@@ -12,6 +12,7 @@ interface AuthContextType {
   isLoading: boolean;
   login: (username: string, password: string) => Promise<void>;
   register: (username: string, email: string, password: string, role: 'candidate' | 'employer') => Promise<void>;
+  loginWithOAuth: (provider: 'google' | 'github', code: string) => Promise<void>;
   logout: () => void;
   updateUser: (updates: Partial<User>) => void;
 }
@@ -72,6 +73,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setUser(mapAuthUser(response.user));
   };
 
+  const loginWithOAuth = async (provider: 'google' | 'github', code: string) => {
+    const response = await oauthCallback(provider, code);
+    setStoredToken(response.token);
+    setUser(mapAuthUser(response.user));
+  };
+
   const logout = () => {
     clearStoredToken();
     setUser(null);
@@ -82,7 +89,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   return (
-    <AuthContext.Provider value={{ user, isAuthenticated: !!user, isLoading, login, register, logout, updateUser }}>
+    <AuthContext.Provider value={{ user, isAuthenticated: !!user, isLoading, login, register, loginWithOAuth, logout, updateUser }}>
       {children}
     </AuthContext.Provider>
   );
